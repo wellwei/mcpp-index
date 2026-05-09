@@ -42,7 +42,7 @@ package = {
     mcpp = {
         language     = "c++23",
         import_std   = false,          -- pure compiled lib, no `import std;`
-        include_dirs = { "*/include" },
+        include_dirs = { "*/include", "*/src" },   -- src/ for private headers (box_helper.hpp etc.),
         sources = {
             "*/src/ftxui/**/*.cpp",
             "!*/src/ftxui/**/*_test.cpp",      -- 30+ gtest files
