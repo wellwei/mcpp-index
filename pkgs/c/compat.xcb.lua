@@ -10,7 +10,6 @@ package = {
     xpm = {
         linux = {
             deps = {
-                "compat:compat.xcb-proto@1.17.0",
                 "python@latest",
             },
             ["1.17.0"] = {
@@ -45,8 +44,9 @@ package = {
         },
         targets = { ["xcb"] = { kind = "shared" } },
         deps = {
-            ["compat.xau"]   = "1.0.12",
-            ["compat.xdmcp"] = "1.1.5",
+            ["compat.xau"]       = "1.0.12",
+            ["compat.xcb-proto"] = "1.17.0",
+            ["compat.xdmcp"]     = "1.1.5",
         },
     },
 }
