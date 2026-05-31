@@ -173,10 +173,10 @@ package = {
         },
         targets = { ["libarchive"] = { kind = "lib" } },
         deps = {
-            ["compat.zlib"]  = "v1.3.2",
+            ["compat.zlib"]  = "1.3.2",
             ["compat.bzip2"] = "1.0.8",
-            ["compat.lz4"]   = "v1.10.0",
-            ["compat.zstd"]  = "v1.5.7",
+            ["compat.lz4"]   = "1.10.0",
+            ["compat.zstd"]  = "1.5.7",
             ["compat.xz"]    = "5.8.3",
         },
     },

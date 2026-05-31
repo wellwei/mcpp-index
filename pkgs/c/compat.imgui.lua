@@ -9,19 +9,19 @@ package = {
 
     xpm = {
         linux = {
-            ["v1.92.8"] = {
+            ["1.92.8"] = {
                 url    = "https://github.com/ocornut/imgui/archive/refs/tags/v1.92.8.tar.gz",
                 sha256 = "fecb33d33930e12ff53a34064e9d3a06c8f7c3e04408f14cd36c80e3faac863b",
             },
         },
         macosx = {
-            ["v1.92.8"] = {
+            ["1.92.8"] = {
                 url    = "https://github.com/ocornut/imgui/archive/refs/tags/v1.92.8.tar.gz",
                 sha256 = "fecb33d33930e12ff53a34064e9d3a06c8f7c3e04408f14cd36c80e3faac863b",
             },
         },
         windows = {
-            ["v1.92.8"] = {
+            ["1.92.8"] = {
                 url    = "https://github.com/ocornut/imgui/archive/refs/tags/v1.92.8.tar.gz",
                 sha256 = "fecb33d33930e12ff53a34064e9d3a06c8f7c3e04408f14cd36c80e3faac863b",
             },

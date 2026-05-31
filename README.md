@@ -29,16 +29,31 @@ mcpp build                  # 自动拉取源码 + 构建
 | 包名 | 版本 | 简介 |
 |------|------|------|
 | `ftxui` | 6.1.9 | C++ 函数式终端 UI 库(screen + dom + component) |
-| `glfw` | 3.4 | GLFW 窗口与输入库(null platform 后端源码构建) |
+| `glfw` | 3.4 | GLFW 窗口与输入库(X11/null 后端源码构建) |
 | `gtest` | 1.15.2 | Google Test 测试框架 |
-| `imgui` | v1.92.8 | Dear ImGui immediate-mode GUI 核心源码 |
+| `imgui` | 1.92.8 | Dear ImGui immediate-mode GUI 核心源码 |
 | `opengl` | 2026.05.31 | Khronos OpenGL API 头文件 |
+| `khrplatform` | 2026.05.31 | Khronos KHR platform 头文件 |
+| `xorgproto` | 2025.1 | X.Org protocol 头文件 |
+| `xtrans` | 1.6.0 | X.Org transport support headers/source snippets |
+| `xau` | 1.0.12 | X authorization runtime library(`libXau.so`) |
+| `xdmcp` | 1.1.5 | X Display Manager Control Protocol runtime library(`libXdmcp.so`) |
+| `xcb-proto` | 1.17.0 | XCB protocol XML definitions and generator metadata |
+| `xcb` | 1.17.0 | X C Binding runtime library(`libxcb.so`) |
+| `x11` | 1.8.13 | Xlib runtime library(`libX11.so`) and public headers |
+| `xcursor` | 1.2.3 | Xcursor runtime library(`libXcursor.so`) and public headers |
+| `xext` | 1.3.7 | Xext runtime library(`libXext.so`) and public headers |
+| `xfixes` | 6.0.2 | Xfixes runtime library(`libXfixes.so`) and public headers |
+| `xi` | 1.8.3 | XInput runtime library(`libXi.so`) and public headers |
+| `xinerama` | 1.1.6 | Xinerama runtime library(`libXinerama.so`) and public headers |
+| `xrandr` | 1.5.5 | Xrandr runtime library(`libXrandr.so`) and public headers |
+| `xrender` | 0.9.12 | Xrender runtime library(`libXrender.so`) and public headers |
 | `mbedtls` | 3.6.1 | TLS/加密库(纯 C) |
 | `lua` | 5.4.7 | Lua 脚本语言(纯 C 嵌入式库) |
-| `zlib` | v1.3.2 | DEFLATE 压缩库 |
+| `zlib` | 1.3.2 | DEFLATE 压缩库 |
 | `bzip2` | 1.0.8 | bzip2 压缩库 |
-| `lz4` | v1.10.0 | LZ4 压缩库 |
-| `zstd` | v1.5.7 | Zstandard 压缩库 |
+| `lz4` | 1.10.0 | LZ4 压缩库 |
+| `zstd` | 1.5.7 | Zstandard 压缩库 |
 | `xz` | 5.8.3 | XZ Utils liblzma 压缩库 |
 | `libarchive` | 3.8.7 | 多格式归档与压缩库 |
 
@@ -61,10 +76,67 @@ libarchive
   └── xz                         ← 压缩后端自动传递
 
 glfw
-  └── opengl                      ← GLFW/glfw3.h 所需 OpenGL 头文件
+  ├── opengl
+  │     └── khrplatform           ← GLFW/glfw3.h 所需 OpenGL/KHR 头文件
+  └── x11 / xcursor / xext / xfixes / xi
+      / xinerama / xorgproto / xrandr / xrender
+                                  ← GLFW Linux X11 后端所需 runtime/header 闭包
+
+xau / xdmcp
+  └── xorgproto                   ← X11 底层 runtime 库的协议头文件
+
+xcb
+  ├── xcb-proto                   ← hook 内生成 xcb 协议源文件
+  ├── xau
+  └── xdmcp
+
+x11
+  ├── xcb
+  ├── xorgproto
+  └── xtrans                      ← Xlib/XIM transport 源码片段
 ```
 
 mcpp 0.0.3+ 的 transitive walker 自动沿链路传播头文件和依赖,消费者只需声明直接依赖。
+
+> 当前 X11/XCB/Xau/Xdmcp 以及 GLFW 需要的 Xcursor/Xext/Xfixes/Xi/Xinerama/
+> Xrandr/Xrender 都已按上游源码提供 runtime `.so`。`compat.glfw` 仍沿用
+> GLFW 上游的 GLX/OpenGL 动态加载行为,窗口运行时需要宿主环境提供可用的
+> X server/GLX/OpenGL 驱动。
+
+### 本地 smoke 验证
+
+```bash
+MCPP=/path/to/mcpp tests/smoke_compat_core.sh
+MCPP=/path/to/mcpp tests/smoke_compat_imgui.sh
+MCPP=/path/to/mcpp tests/smoke_compat_archive.sh
+```
+
+该脚本会通过当前 checkout 作为本地 path index 创建临时 mcpp 项目,验证:
+
+- `compat.gtest`/`compat.ftxui`/`compat.lua`/`compat.mbedtls` 能用上游
+  `#include <...>` API 构建并运行最小用例
+- `compat.opengl`/`compat.khrplatform` 能提供 GLFW/OpenGL 常见头文件闭包
+- `compat.imgui@1.92.8` core 能构建并运行一个 headless ImGui frame
+- `compat.glfw@3.4` 能构建、运行 `glfwInit()` smoke,并链接 X11 扩展 runtime `.so`
+- `compat.xau@1.0.12`/`compat.xdmcp@1.1.5` 能构建、运行并链接 runtime `.so`
+- `compat.xcb@1.17.0` 能构建、运行并链接 `libxcb.so`
+- `compat.x11@1.8.13` 能构建、运行并链接 `libX11.so` → `libxcb.so`
+- `compat.xcursor`/`compat.xext`/`compat.xfixes`/`compat.xi`/`compat.xinerama`/
+  `compat.xrandr`/`compat.xrender` 能构建、运行并链接对应 `libX*.so`
+- `compat.libarchive` 能连同 `zlib`/`bzip2`/`lz4`/`zstd`/`xz` 压缩后端构建并运行
+
+有窗口的 ImGui + GLFW + OpenGL demo 单独放在可选 smoke 中:
+
+```bash
+MCPP=/path/to/mcpp tests/smoke_compat_imgui_window.sh
+MCPP=/path/to/mcpp MCPP_INDEX_RUN_WINDOW_SMOKE=1 tests/smoke_compat_imgui_window.sh
+```
+
+默认只验证 demo 构建和 X11 runtime 链接闭包。显式设置
+`MCPP_INDEX_RUN_WINDOW_SMOKE=1` 后才会运行隐藏窗口帧渲染,此时需要当前
+`DISPLAY` 可用,并且宿主机提供 GLVND/GLX/OpenGL 驱动 runtime。脚本会把
+宿主 GL runtime 和 compat X11 runtime 组装到临时 `LD_LIBRARY_PATH` 中,
+避免系统 X11 库覆盖 mcpp 构建出的 `libX11.so`/`libxcb.so`。
 
 ## 包描述文件
 

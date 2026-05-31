@@ -39,6 +39,8 @@ package = {
         },
         sources = {"mcpp_generated/opengl_empty.c"},
         targets = { ["opengl"] = { kind = "lib" } },
-        deps    = {},
+        deps    = {
+            ["compat.khrplatform"] = "2026.05.31",
+        },
     },
 }

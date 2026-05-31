@@ -9,19 +9,19 @@ package = {
 
     xpm = {
         linux = {
-            ["v1.5.7"] = {
+            ["1.5.7"] = {
                 url    = "https://github.com/facebook/zstd/archive/refs/tags/v1.5.7.tar.gz",
                 sha256 = "37d7284556b20954e56e1ca85b80226768902e2edabd3b649e9e72c0c9012ee3",
             },
         },
         macosx = {
-            ["v1.5.7"] = {
+            ["1.5.7"] = {
                 url    = "https://github.com/facebook/zstd/archive/refs/tags/v1.5.7.tar.gz",
                 sha256 = "37d7284556b20954e56e1ca85b80226768902e2edabd3b649e9e72c0c9012ee3",
             },
         },
         windows = {
-            ["v1.5.7"] = {
+            ["1.5.7"] = {
                 url    = "https://github.com/facebook/zstd/archive/refs/tags/v1.5.7.tar.gz",
                 sha256 = "37d7284556b20954e56e1ca85b80226768902e2edabd3b649e9e72c0c9012ee3",
             },

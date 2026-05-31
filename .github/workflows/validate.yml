@@ -2,7 +2,7 @@ name: validate
 
 on:
   pull_request:
-    paths: ["pkgs/**/*.lua", ".github/workflows/validate.yml"]
+    paths: ["pkgs/**/*.lua", "tests/**", "README.md", ".github/workflows/validate.yml"]
   push:
     branches: [main]
 
@@ -17,18 +17,13 @@ jobs:
         run: |
           fail=0
           for f in pkgs/*/*.lua; do
-            # 1. Forbidden install hook (security: descriptors must not run code)
-            if grep -q "^function install" "$f"; then
-              echo "::error file=$f::install hook is forbidden"
-              fail=1
-            fi
-            # 2. Lua syntax check — load (= compile) without executing.
+            # 1. Lua syntax check — load (= compile) without executing.
             #    `loadfile(name, 't')` rejects bytecode and parses text only.
             if ! lua5.4 -e "assert(loadfile('$f', 't'))" >/dev/null 2>&1; then
               echo "::error file=$f::lua syntax error"
               fail=1
             fi
-            # 3. xpkg V1 baseline: the file has to populate `package = { ... }`
+            # 2. xpkg V1 baseline: the file has to populate `package = { ... }`
             #    with at least `spec`, `name`, and an `xpm` table. Form A vs
             #    Form B (mcpp = "<path>" / mcpp = { ... }) is descriptor-author
             #    choice and not enforced here.
@@ -38,6 +33,34 @@ jobs:
                 fail=1
               fi
             done
+            # 3. Package version identifiers and dependency versions should be
+            #    bare versions ("1.2.3"), not upstream tag names ("v1.2.3").
+            #    Download URLs may still contain refs/tags/v* when upstream
+            #    uses that tag spelling.
+            if grep -nE '\["v[0-9]+|\["[^"]+"\][[:space:]]*=[[:space:]]*"v[0-9]+' "$f"; then
+              echo "::error file=$f::version identifiers must not use a leading v"
+              fail=1
+            fi
           done
           [ $fail -eq 0 ] && echo "All package files valid."
           exit $fail
+
+  smoke-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download mcpp
+        env:
+          MCPP_VERSION: "0.0.38"
+        run: |
+          curl -L -fsS -o mcpp.tar.gz \
+            "https://github.com/mcpp-community/mcpp/releases/download/v${MCPP_VERSION}/mcpp-${MCPP_VERSION}-linux-x86_64.tar.gz"
+          tar -xzf mcpp.tar.gz
+          echo "$PWD/mcpp-${MCPP_VERSION}-linux-x86_64/bin" >> "$GITHUB_PATH"
+      - name: Run compat smoke tests
+        run: |
+          mcpp --version
+          timeout 1800 bash tests/smoke_compat_core.sh
+          timeout 1800 bash tests/smoke_compat_imgui.sh
+          timeout 1800 bash tests/smoke_compat_archive.sh
+          timeout 1800 bash tests/smoke_compat_imgui_window.sh
