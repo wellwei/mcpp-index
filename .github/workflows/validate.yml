@@ -56,10 +56,13 @@ jobs:
           curl -L -fsS -o mcpp.tar.gz \
             "https://github.com/mcpp-community/mcpp/releases/download/v${MCPP_VERSION}/mcpp-${MCPP_VERSION}-linux-x86_64.tar.gz"
           tar -xzf mcpp.tar.gz
-          echo "$PWD/mcpp-${MCPP_VERSION}-linux-x86_64/bin" >> "$GITHUB_PATH"
+          root="$PWD/mcpp-${MCPP_VERSION}-linux-x86_64"
+          echo "MCPP=$root/bin/mcpp" >> "$GITHUB_ENV"
+          echo "MCPP_VENDORED_XLINGS=$root/registry/bin/xlings" >> "$GITHUB_ENV"
+          echo "$root/bin" >> "$GITHUB_PATH"
       - name: Run compat smoke tests
         run: |
-          mcpp --version
+          "$MCPP" --version
           timeout 1800 bash tests/smoke_compat_core.sh
           timeout 1800 bash tests/smoke_compat_imgui.sh
           timeout 1800 bash tests/smoke_compat_archive.sh
