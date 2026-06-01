@@ -49,6 +49,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Restore mcpp registry cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.mcpp/registry
+          key: mcpp-registry-${{ runner.os }}-0.0.41-${{ hashFiles('pkgs/**/*.lua', 'tests/smoke_compat_*.sh', '.github/workflows/validate.yml') }}
+          restore-keys: |
+            mcpp-registry-${{ runner.os }}-0.0.41-
+            mcpp-registry-${{ runner.os }}-
       - name: Download mcpp
         env:
           MCPP_VERSION: "0.0.41"
@@ -90,6 +98,14 @@ jobs:
             xlings: registry/bin/xlings.exe
     steps:
       - uses: actions/checkout@v4
+      - name: Restore mcpp registry cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.mcpp/registry
+          key: mcpp-registry-${{ runner.os }}-0.0.41-${{ hashFiles('pkgs/**/*.lua', 'tests/smoke_compat_*.sh', '.github/workflows/validate.yml') }}
+          restore-keys: |
+            mcpp-registry-${{ runner.os }}-0.0.41-
+            mcpp-registry-${{ runner.os }}-
       - name: Download mcpp
         shell: bash
         env:
