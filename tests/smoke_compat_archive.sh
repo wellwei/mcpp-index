@@ -236,7 +236,7 @@ int main() {
                                 xz_compressed.size()) != LZMA_OK) {
         return 9;
     }
-    uint64_t xz_memlimit = std::numeric_limits<uint64_t>::max();
+    uint64_t xz_memlimit = (std::numeric_limits<uint64_t>::max)();
     size_t xz_input_pos = 0;
     size_t xz_output_pos = 0;
     std::vector<uint8_t> xz_output(input_size);
