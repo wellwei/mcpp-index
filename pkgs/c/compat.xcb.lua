@@ -10,7 +10,7 @@ package = {
     xpm = {
         linux = {
             deps = {
-                "python@latest",
+                "xim:python@latest",
             },
             ["1.17.0"] = {
                 url    = "https://xorg.freedesktop.org/releases/individual/lib/libxcb-1.17.0.tar.xz",

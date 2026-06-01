@@ -14,7 +14,11 @@ if [[ -z "$MCPP_BIN" || ! -x "$MCPP_BIN" ]]; then
 fi
 
 TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
+if [[ "${MCPP_INDEX_KEEP_SMOKE_TMP:-0}" == "1" ]]; then
+    echo "KEEP: $TMP"
+else
+    trap 'rm -rf "$TMP"' EXIT
+fi
 SMOKE_CACHE_DIR="${MCPP_INDEX_SMOKE_CACHE_DIR:-}"
 SMOKE_XPKGS_DIR="${MCPP_INDEX_SMOKE_XPKGS_DIR:-}"
 
@@ -27,14 +31,16 @@ link_xpkgs() {
     local src="$1"
     [[ -d "$src" ]] || return 0
     find "$src" -mindepth 1 -maxdepth 1 -type d | while read -r pkg; do
+        [[ "$(basename "$pkg")" == compat-x-* ]] && continue
         ln -s "$pkg" "$MCPP_HOME/registry/data/xpkgs/$(basename "$pkg")" 2>/dev/null || true
     done
 }
 link_xpkgs "$SMOKE_XPKGS_DIR"
 link_xpkgs "$USER_MCPP/registry/data/xpkgs"
 if [[ -d "$USER_MCPP/registry/data/xim-pkgindex" ]]; then
-    mkdir -p "$MCPP_HOME/registry/data"
-    ln -s "$USER_MCPP/registry/data/xim-pkgindex" "$MCPP_HOME/registry/data/xim-pkgindex" 2>/dev/null || true
+    mkdir -p "$MCPP_HOME/registry/data/xim-pkgindex"
+    cp -a "$USER_MCPP/registry/data/xim-pkgindex/." "$MCPP_HOME/registry/data/xim-pkgindex/" 2>/dev/null || true
+    rm -f "$MCPP_HOME/registry/data/xim-pkgindex/.xlings-index-cache.json"
 fi
 if [[ -d "$USER_MCPP/registry/bin" ]]; then
     mkdir -p "$MCPP_HOME/registry"
