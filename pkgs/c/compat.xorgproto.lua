@@ -3,7 +3,7 @@ package = {
     namespace   = "compat",
     name        = "compat.xorgproto",
     description = "X.Org protocol headers for X11-based compat packages",
-    licenses    = {"MIT"},
+    licenses    = {},
     repo        = "https://gitlab.freedesktop.org/xorg/proto/xorgproto",
     type        = "package",
 

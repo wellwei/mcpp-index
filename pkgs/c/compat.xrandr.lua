@@ -3,7 +3,7 @@ package = {
     namespace   = "compat",
     name        = "compat.xrandr",
     description = "X Resize, Rotate and Reflect extension runtime library and public headers",
-    licenses    = {"MIT"},
+    licenses    = {"HPND-sell-variant"},
     repo        = "https://gitlab.freedesktop.org/xorg/lib/libxrandr",
     type        = "package",
 

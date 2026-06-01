@@ -3,7 +3,7 @@ package = {
     namespace   = "compat",
     name        = "compat.x11",
     description = "Xlib runtime library and public headers built from upstream sources",
-    licenses    = {"MIT"},
+    licenses    = {"BSD-1-Clause", "HPND-sell-variant", "ISC", "MIT", "MIT-Open-Group", "X11"},
     repo        = "https://gitlab.freedesktop.org/xorg/lib/libx11",
     type        = "package",
 

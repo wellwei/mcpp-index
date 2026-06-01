@@ -3,7 +3,7 @@ package = {
     namespace   = "compat",
     name        = "compat.xcursor",
     description = "X cursor management runtime library and public headers",
-    licenses    = {"MIT"},
+    licenses    = {"HPND-sell-variant"},
     repo        = "https://gitlab.freedesktop.org/xorg/lib/libxcursor",
     type        = "package",
 

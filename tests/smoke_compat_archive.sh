@@ -22,7 +22,11 @@ fi
 SMOKE_CACHE_DIR="${MCPP_INDEX_SMOKE_CACHE_DIR:-}"
 SMOKE_XPKGS_DIR="${MCPP_INDEX_SMOKE_XPKGS_DIR:-}"
 
-export MCPP_HOME="$TMP/mcpp-home"
+if [[ -n "${MCPP_INDEX_SMOKE_MCPP_HOME:-}" ]]; then
+    export MCPP_HOME="$MCPP_INDEX_SMOKE_MCPP_HOME"
+else
+    export MCPP_HOME="$TMP/mcpp-home"
+fi
 mkdir -p "$MCPP_HOME"
 
 USER_MCPP="${HOME}/.mcpp"
