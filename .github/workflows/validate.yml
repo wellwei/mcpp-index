@@ -56,7 +56,6 @@ jobs:
           key: mcpp-registry-${{ runner.os }}-0.0.41-${{ hashFiles('pkgs/**/*.lua', 'tests/smoke_compat_*.sh', '.github/workflows/validate.yml') }}
           restore-keys: |
             mcpp-registry-${{ runner.os }}-0.0.41-
-            mcpp-registry-${{ runner.os }}-
       - name: Download mcpp
         env:
           MCPP_VERSION: "0.0.41"
@@ -65,6 +64,8 @@ jobs:
             "https://github.com/mcpp-community/mcpp/releases/download/v${MCPP_VERSION}/mcpp-${MCPP_VERSION}-linux-x86_64.tar.gz"
           tar -xzf mcpp.tar.gz
           root="$PWD/mcpp-${MCPP_VERSION}-linux-x86_64"
+          mkdir -p "$HOME/.mcpp/registry"
+          cp -a "$root/registry/." "$HOME/.mcpp/registry/"
           echo "MCPP=$root/bin/mcpp" >> "$GITHUB_ENV"
           echo "MCPP_VENDORED_XLINGS=$root/registry/bin/xlings" >> "$GITHUB_ENV"
           echo "$root/bin" >> "$GITHUB_PATH"
@@ -105,7 +106,6 @@ jobs:
           key: mcpp-registry-${{ runner.os }}-0.0.41-${{ hashFiles('pkgs/**/*.lua', 'tests/smoke_compat_*.sh', '.github/workflows/validate.yml') }}
           restore-keys: |
             mcpp-registry-${{ runner.os }}-0.0.41-
-            mcpp-registry-${{ runner.os }}-
       - name: Download mcpp
         shell: bash
         env:
@@ -125,6 +125,8 @@ jobs:
           esac
 
           root="$PWD/$MCPP_ROOT"
+          mkdir -p "$HOME/.mcpp/registry"
+          cp -a "$root/registry/." "$HOME/.mcpp/registry/"
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             echo "MCPP=$(cygpath -m "$root/${{ matrix.mcpp }}")" >> "$GITHUB_ENV"
             echo "MCPP_VENDORED_XLINGS=$(cygpath -m "$root/${{ matrix.xlings }}")" >> "$GITHUB_ENV"
