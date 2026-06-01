@@ -3,7 +3,7 @@ package = {
     namespace   = "compat",
     name        = "compat.xdmcp",
     description = "X Display Manager Control Protocol library",
-    licenses    = {"MIT"},
+    licenses    = {"MIT-Open-Group"},
     repo        = "https://gitlab.freedesktop.org/xorg/lib/libxdmcp",
     type        = "package",
 

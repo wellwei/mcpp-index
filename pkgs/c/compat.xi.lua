@@ -3,7 +3,7 @@ package = {
     namespace   = "compat",
     name        = "compat.xi",
     description = "X Input extension runtime library and public headers",
-    licenses    = {"MIT"},
+    licenses    = {"MIT-Open-Group"},
     repo        = "https://gitlab.freedesktop.org/xorg/lib/libxi",
     type        = "package",
 

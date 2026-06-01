@@ -3,7 +3,7 @@ package = {
     namespace   = "compat",
     name        = "compat.xtrans",
     description = "X.Org transport layer support headers used by Xlib",
-    licenses    = {"MIT"},
+    licenses    = {"HPND-sell-variant", "MIT", "MIT-Open-Group"},
     repo        = "https://gitlab.freedesktop.org/xorg/lib/libxtrans",
     type        = "package",
 
