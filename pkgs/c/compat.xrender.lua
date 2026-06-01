@@ -3,7 +3,7 @@ package = {
     namespace   = "compat",
     name        = "compat.xrender",
     description = "X Rendering extension runtime library and public headers",
-    licenses    = {"MIT"},
+    licenses    = {"HPND-sell-variant"},
     repo        = "https://gitlab.freedesktop.org/xorg/lib/libxrender",
     type        = "package",
 

@@ -3,7 +3,7 @@ package = {
     namespace   = "compat",
     name        = "compat.xz",
     description = "XZ Utils liblzma compression library",
-    licenses    = {"0BSD", "LGPL-2.1-or-later"},
+    licenses    = {"0BSD"},
     repo        = "https://github.com/tukaani-project/xz",
     type        = "package",
 

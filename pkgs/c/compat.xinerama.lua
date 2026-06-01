@@ -3,7 +3,7 @@ package = {
     namespace   = "compat",
     name        = "compat.xinerama",
     description = "Xinerama extension runtime library and public headers",
-    licenses    = {"MIT"},
+    licenses    = {"MIT-Open-Group"},
     repo        = "https://gitlab.freedesktop.org/xorg/lib/libxinerama",
     type        = "package",
 
