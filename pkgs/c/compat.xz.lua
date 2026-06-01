@@ -79,6 +79,11 @@ package = {
             "-DHAVE_DECODER_SPARC=1",
             "-DHAVE_DECODER_RISCV=1",
             "-DHAVE_LZIP_DECODER=1",
+            "-DHAVE_MF_HC3=1",
+            "-DHAVE_MF_HC4=1",
+            "-DHAVE_MF_BT2=1",
+            "-DHAVE_MF_BT3=1",
+            "-DHAVE_MF_BT4=1",
         },
         sources = {
             "*/src/common/tuklib_physmem.c",
