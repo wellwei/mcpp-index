@@ -24,6 +24,12 @@ mcpp build                  # 自动拉取源码 + 构建
 | `mcpplibs.xpkg` | 0.0.40 | xpkg V1 规范的 C++23 参考实现 — `import mcpplibs.xpkg;` | [openxlings/libxpkg](https://github.com/openxlings/libxpkg) |
 | `mcpplibs.templates` | 0.0.1 | 最小化模块库模板 — `import mcpplibs.templates;` | [mcpplibs/templates](https://github.com/mcpplibs/templates) |
 
+### 独立模块化库
+
+| 包名 | 版本 | 简介 | 仓库 |
+|------|------|------|------|
+| `imgui` | 0.0.1 | Dear ImGui C++23 模块封装 — `import imgui.core;` / `import imgui.backend.glfw_opengl3;` | [mcpplibs/imgui-m](https://github.com/mcpplibs/imgui-m) |
+
 ### 第三方 C/C++ 库
 
 | 包名 | 版本 | 简介 |
@@ -68,6 +74,12 @@ mcpplibs.xpkg
   └── mcpplibs.capi.lua
         └── lua                  ← 同上
 
+imgui
+  ├── compat.imgui
+  ├── compat.glfw
+  │     └── compat.opengl
+  └── compat.opengl              ← 消费者只需要 import imgui.* 模块
+
 libarchive
   ├── zlib
   ├── bzip2
@@ -109,6 +121,7 @@ mcpp 0.0.3+ 的 transitive walker 自动沿链路传播头文件和依赖,消费
 MCPP=/path/to/mcpp tests/smoke_compat_core.sh
 MCPP=/path/to/mcpp tests/smoke_compat_imgui.sh
 MCPP=/path/to/mcpp tests/smoke_compat_archive.sh
+MCPP=/path/to/mcpp tests/smoke_imgui_module.sh
 ```
 
 该脚本会通过当前 checkout 作为本地 path index 创建临时 mcpp 项目,验证:
@@ -117,6 +130,8 @@ MCPP=/path/to/mcpp tests/smoke_compat_archive.sh
   `#include <...>` API 构建并运行最小用例
 - `compat.opengl`/`compat.khrplatform` 能提供 GLFW/OpenGL 常见头文件闭包
 - `compat.imgui@1.92.8` core 能构建并运行一个 headless ImGui frame
+- `imgui@0.0.1` 模块包能通过 `[dependencies] imgui = "0.0.1"` 构建并运行
+  `import imgui.core;` / `import imgui.backend.glfw_opengl3;` 最小用例
 - `compat.glfw@3.4` 能构建、运行 `glfwInit()` smoke,并链接 X11 扩展 runtime `.so`
 - `compat.xau@1.0.12`/`compat.xdmcp@1.1.5` 能构建、运行并链接 runtime `.so`
 - `compat.xcb@1.17.0` 能构建、运行并链接 `libxcb.so`
