@@ -29,6 +29,7 @@ package = {
             library_dirs = { "mcpp_generated/glx_runtime/lib" },
             dlopen_libs = { "libGLX.so.0", "libGL.so.1", "libGL.so" },
             capabilities = { "x11.display", "opengl.glx.driver" },
+            provides = { "opengl.glx.driver", "x11.display" },
         },
         deps = {
             ["compat.xext"] = "1.3.7",
