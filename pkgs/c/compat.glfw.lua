@@ -56,7 +56,7 @@ package = {
             cflags = { "-D_DEFAULT_SOURCE", "-D_GLFW_X11" },
             runtime = {
                 dlopen_libs = { "libGLX.so.0", "libGL.so.1", "libGL.so" },
-                capabilities = { "x11.display", "opengl.glx.driver" },
+                capabilities = { "x11.display", "opengl.glx.driver", "abi:glibc" },
             },
             sources = {
                 "src/x11_init.c",
