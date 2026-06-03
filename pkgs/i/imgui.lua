@@ -15,19 +15,19 @@ package = {
         linux = {
             ["0.0.1"] = {
                 url    = "https://github.com/mcpplibs/imgui-m/archive/refs/tags/0.0.1.tar.gz",
-                sha256 = "b87188bd2ca7d8010a695d5ebfccd76eb3e28b3e002885207493225057f5e190",
+                sha256 = "168d1f9a2dfc3823d671385654823f7eba25f146d029ceeacfb19a84617af4a0",
             },
         },
         macosx = {
             ["0.0.1"] = {
                 url    = "https://github.com/mcpplibs/imgui-m/archive/refs/tags/0.0.1.tar.gz",
-                sha256 = "b87188bd2ca7d8010a695d5ebfccd76eb3e28b3e002885207493225057f5e190",
+                sha256 = "168d1f9a2dfc3823d671385654823f7eba25f146d029ceeacfb19a84617af4a0",
             },
         },
         windows = {
             ["0.0.1"] = {
                 url    = "https://github.com/mcpplibs/imgui-m/archive/refs/tags/0.0.1.tar.gz",
-                sha256 = "b87188bd2ca7d8010a695d5ebfccd76eb3e28b3e002885207493225057f5e190",
+                sha256 = "168d1f9a2dfc3823d671385654823f7eba25f146d029ceeacfb19a84617af4a0",
             },
         },
     },
