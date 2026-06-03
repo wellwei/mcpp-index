@@ -21,6 +21,10 @@ package = {
                 url    = "https://github.com/mcpplibs/imgui-m/archive/refs/tags/0.0.2.tar.gz",
                 sha256 = "dd2199c76ea762fc2eb084967fa42953c8b876e076e41b57409f84b322e3161e",
             },
+            ["0.0.3"] = {
+                url    = "https://github.com/mcpplibs/imgui-m/archive/refs/tags/0.0.3.tar.gz",
+                sha256 = "55bc5c557f5c803279f923e0335a788a6d6f57289b3c2e1a0dd0cc46414b3524",
+            },
         },
         macosx = {
             ["0.0.1"] = {
@@ -31,6 +35,10 @@ package = {
                 url    = "https://github.com/mcpplibs/imgui-m/archive/refs/tags/0.0.2.tar.gz",
                 sha256 = "dd2199c76ea762fc2eb084967fa42953c8b876e076e41b57409f84b322e3161e",
             },
+            ["0.0.3"] = {
+                url    = "https://github.com/mcpplibs/imgui-m/archive/refs/tags/0.0.3.tar.gz",
+                sha256 = "55bc5c557f5c803279f923e0335a788a6d6f57289b3c2e1a0dd0cc46414b3524",
+            },
         },
         windows = {
             ["0.0.1"] = {
@@ -40,6 +48,10 @@ package = {
             ["0.0.2"] = {
                 url    = "https://github.com/mcpplibs/imgui-m/archive/refs/tags/0.0.2.tar.gz",
                 sha256 = "dd2199c76ea762fc2eb084967fa42953c8b876e076e41b57409f84b322e3161e",
+            },
+            ["0.0.3"] = {
+                url    = "https://github.com/mcpplibs/imgui-m/archive/refs/tags/0.0.3.tar.gz",
+                sha256 = "55bc5c557f5c803279f923e0335a788a6d6f57289b3c2e1a0dd0cc46414b3524",
             },
         },
     },
