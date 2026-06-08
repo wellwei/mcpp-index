@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["2026.06.03"] = {
-                url    = "https://raw.githubusercontent.com/KhronosGroup/OpenGL-Registry/a30033d3e812c9bf10094f1010374a6b15e192eb/README.adoc",
+                url    = {
+                    GLOBAL = "https://raw.githubusercontent.com/KhronosGroup/OpenGL-Registry/a30033d3e812c9bf10094f1010374a6b15e192eb/README.adoc",
+                    CN     = "https://gitcode.com/mcpp-res/glx-runtime/releases/download/2026.06.03/glx-runtime-2026.06.03.adoc",
+                },
                 sha256 = "ea68efce197e68413ebb62c51ab4bccfb2309a2fca776d31b49d972f59f3640e",
             },
         },

@@ -41,8 +41,47 @@ jobs:
               echo "::error file=$f::version identifiers must not use a leading v"
               fail=1
             fi
+            # 4. Mirror table sanity: when a download `url` is written as a
+            #    { GLOBAL=..., CN=... } table, both regions must be present and
+            #    the CN entry must point at the gitcode mcpp-res mirror.
+            if ! lua5.4 tests/check_mirror_urls.lua "$f"; then
+              fail=1
+            fi
           done
           [ $fail -eq 0 ] && echo "All package files valid."
+          exit $fail
+
+  mirror-cn-reachable:
+    # Closed-loop guard for the CN mirror: every CN url referenced by a
+    # descriptor must be a live, downloadable gitcode release asset.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install lua
+        run: sudo apt-get install -y --no-install-recommends lua5.4
+      - name: Check CN mirror assets are reachable
+        run: |
+          fail=0
+          # collect unique CN urls across all descriptors
+          : > /tmp/cn.tsv
+          for f in pkgs/*/*.lua; do
+            lua5.4 tests/list_cn_urls.lua "$f" >> /tmp/cn.tsv || true
+          done
+          sort -u /tmp/cn.tsv -o /tmp/cn.tsv
+          total=$(grep -c . /tmp/cn.tsv || true)
+          echo "checking $total CN mirror url(s)"
+          while IFS=$'\t' read -r url sha; do
+            [ -z "$url" ] && continue
+            # follow redirects; gitcode release assets resolve to object storage
+            code=$(curl -fsSL -o /dev/null -w '%{http_code}' --retry 2 --max-time 60 "$url" || echo "000")
+            if [ "$code" != "200" ]; then
+              echo "::error::CN mirror unreachable ($code): $url"
+              fail=1
+            else
+              echo "ok: $url"
+            fi
+          done < /tmp/cn.tsv
+          [ $fail -eq 0 ] && echo "All CN mirror urls reachable."
           exit $fail
 
   smoke-linux:

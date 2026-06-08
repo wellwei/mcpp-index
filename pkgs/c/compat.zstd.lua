@@ -10,19 +10,28 @@ package = {
     xpm = {
         linux = {
             ["1.5.7"] = {
-                url    = "https://github.com/facebook/zstd/archive/refs/tags/v1.5.7.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/facebook/zstd/archive/refs/tags/v1.5.7.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/zstd/releases/download/1.5.7/zstd-1.5.7.tar.gz",
+                },
                 sha256 = "37d7284556b20954e56e1ca85b80226768902e2edabd3b649e9e72c0c9012ee3",
             },
         },
         macosx = {
             ["1.5.7"] = {
-                url    = "https://github.com/facebook/zstd/archive/refs/tags/v1.5.7.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/facebook/zstd/archive/refs/tags/v1.5.7.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/zstd/releases/download/1.5.7/zstd-1.5.7.tar.gz",
+                },
                 sha256 = "37d7284556b20954e56e1ca85b80226768902e2edabd3b649e9e72c0c9012ee3",
             },
         },
         windows = {
             ["1.5.7"] = {
-                url    = "https://github.com/facebook/zstd/archive/refs/tags/v1.5.7.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/facebook/zstd/archive/refs/tags/v1.5.7.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/zstd/releases/download/1.5.7/zstd-1.5.7.tar.gz",
+                },
                 sha256 = "37d7284556b20954e56e1ca85b80226768902e2edabd3b649e9e72c0c9012ee3",
             },
         },

@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["1.0.12"] = {
-                url    = "https://xorg.freedesktop.org/releases/individual/lib/libXau-1.0.12.tar.gz",
+                url    = {
+                    GLOBAL = "https://xorg.freedesktop.org/releases/individual/lib/libXau-1.0.12.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/xau/releases/download/1.0.12/xau-1.0.12.tar.gz",
+                },
                 sha256 = "2402dd938da4d0a332349ab3d3586606175e19cb32cb9fe013c19f1dc922dcee",
             },
         },

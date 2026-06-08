@@ -10,19 +10,28 @@ package = {
     xpm = {
         linux = {
             ["3.4"] = {
-                url    = "https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/glfw/releases/download/3.4/glfw-3.4.tar.gz",
+                },
                 sha256 = "c038d34200234d071fae9345bc455e4a8f2f544ab60150765d7704e08f3dac01",
             },
         },
         macosx = {
             ["3.4"] = {
-                url    = "https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/glfw/releases/download/3.4/glfw-3.4.tar.gz",
+                },
                 sha256 = "c038d34200234d071fae9345bc455e4a8f2f544ab60150765d7704e08f3dac01",
             },
         },
         windows = {
             ["3.4"] = {
-                url    = "https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/glfw/releases/download/3.4/glfw-3.4.tar.gz",
+                },
                 sha256 = "c038d34200234d071fae9345bc455e4a8f2f544ab60150765d7704e08f3dac01",
             },
         },

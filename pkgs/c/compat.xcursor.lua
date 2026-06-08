@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["1.2.3"] = {
-                url    = "https://xorg.freedesktop.org/releases/individual/lib/libXcursor-1.2.3.tar.gz",
+                url    = {
+                    GLOBAL = "https://xorg.freedesktop.org/releases/individual/lib/libXcursor-1.2.3.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/xcursor/releases/download/1.2.3/xcursor-1.2.3.tar.gz",
+                },
                 sha256 = "74e72da27e61cc2cfd2e267c14f500ea47775850048ee0b00362a55c9b60ee9b",
             },
         },

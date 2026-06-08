@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["1.3.7"] = {
-                url    = "https://xorg.freedesktop.org/releases/individual/lib/libXext-1.3.7.tar.gz",
+                url    = {
+                    GLOBAL = "https://xorg.freedesktop.org/releases/individual/lib/libXext-1.3.7.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/xext/releases/download/1.3.7/xext-1.3.7.tar.gz",
+                },
                 sha256 = "6564608dc3b816b0cfddf0c7ddc62bc579055dd70b2f28113a618df2acb64189",
             },
         },

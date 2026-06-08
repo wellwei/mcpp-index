@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["1.8.3"] = {
-                url    = "https://xorg.freedesktop.org/releases/individual/lib/libXi-1.8.3.tar.gz",
+                url    = {
+                    GLOBAL = "https://xorg.freedesktop.org/releases/individual/lib/libXi-1.8.3.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/xi/releases/download/1.8.3/xi-1.8.3.tar.gz",
+                },
                 sha256 = "6648c44127e4585f4e7842c0802d265008fa6f9741df0ea6ee7934a5267adf63",
             },
         },

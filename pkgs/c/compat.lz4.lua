@@ -10,19 +10,28 @@ package = {
     xpm = {
         linux = {
             ["1.10.0"] = {
-                url    = "https://github.com/lz4/lz4/archive/refs/tags/v1.10.0.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/lz4/lz4/archive/refs/tags/v1.10.0.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/lz4/releases/download/1.10.0/lz4-1.10.0.tar.gz",
+                },
                 sha256 = "537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b",
             },
         },
         macosx = {
             ["1.10.0"] = {
-                url    = "https://github.com/lz4/lz4/archive/refs/tags/v1.10.0.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/lz4/lz4/archive/refs/tags/v1.10.0.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/lz4/releases/download/1.10.0/lz4-1.10.0.tar.gz",
+                },
                 sha256 = "537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b",
             },
         },
         windows = {
             ["1.10.0"] = {
-                url    = "https://github.com/lz4/lz4/archive/refs/tags/v1.10.0.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/lz4/lz4/archive/refs/tags/v1.10.0.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/lz4/releases/download/1.10.0/lz4-1.10.0.tar.gz",
+                },
                 sha256 = "537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b",
             },
         },

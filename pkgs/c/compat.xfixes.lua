@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["6.0.2"] = {
-                url    = "https://xorg.freedesktop.org/releases/individual/lib/libXfixes-6.0.2.tar.gz",
+                url    = {
+                    GLOBAL = "https://xorg.freedesktop.org/releases/individual/lib/libXfixes-6.0.2.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/xfixes/releases/download/6.0.2/xfixes-6.0.2.tar.gz",
+                },
                 sha256 = "041331b8e6e36038b3bf836785b6b175ec8515f964c9e4e3316b3bfed0f53ac7",
             },
         },

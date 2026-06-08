@@ -10,19 +10,28 @@ package = {
     xpm = {
         linux = {
             ["3.8.7"] = {
-                url    = "https://libarchive.org/downloads/libarchive-3.8.7.tar.gz",
+                url    = {
+                    GLOBAL = "https://libarchive.org/downloads/libarchive-3.8.7.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/libarchive/releases/download/3.8.7/libarchive-3.8.7.tar.gz",
+                },
                 sha256 = "4b787cca6697a95c7725e45293c973c208cbdc71ae2279f30ef09f52472b9166",
             },
         },
         macosx = {
             ["3.8.7"] = {
-                url    = "https://libarchive.org/downloads/libarchive-3.8.7.tar.gz",
+                url    = {
+                    GLOBAL = "https://libarchive.org/downloads/libarchive-3.8.7.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/libarchive/releases/download/3.8.7/libarchive-3.8.7.tar.gz",
+                },
                 sha256 = "4b787cca6697a95c7725e45293c973c208cbdc71ae2279f30ef09f52472b9166",
             },
         },
         windows = {
             ["3.8.7"] = {
-                url    = "https://github.com/libarchive/libarchive/archive/refs/tags/v3.8.7.zip",
+                url    = {
+                    GLOBAL = "https://github.com/libarchive/libarchive/archive/refs/tags/v3.8.7.zip",
+                    CN     = "https://gitcode.com/mcpp-res/libarchive/releases/download/3.8.7/libarchive-3.8.7.zip",
+                },
                 sha256 = "8e16ac8797510144ab71ead4181ea1efb28e036b9fed283e57490ea39b8180d2",
             },
         },

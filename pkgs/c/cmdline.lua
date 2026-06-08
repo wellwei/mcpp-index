@@ -20,31 +20,49 @@ package = {
     xpm = {
         linux = {
             ["0.0.1"] = {
-                url    = "https://github.com/mcpplibs/cmdline/archive/refs/tags/0.0.1.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/cmdline/archive/refs/tags/0.0.1.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/cmdline/releases/download/0.0.1/cmdline-0.0.1.tar.gz",
+                },
                 sha256 = "3fb2f5495c1a144485b3cbb2e43e27059151633460f702af0f3851cbff387ef0",
             },
             ["0.0.2"] = {
-                url    = "https://github.com/mcpplibs/cmdline/archive/refs/tags/v0.0.2.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/cmdline/archive/refs/tags/v0.0.2.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/cmdline/releases/download/0.0.2/cmdline-0.0.2.tar.gz",
+                },
                 sha256 = "4f3e2b8dc4d9f11bdd9a784a9914e889234ac305e1020282ffa03f506b75d52a",
             },
         },
         macosx = {
             ["0.0.1"] = {
-                url    = "https://github.com/mcpplibs/cmdline/archive/refs/tags/0.0.1.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/cmdline/archive/refs/tags/0.0.1.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/cmdline/releases/download/0.0.1/cmdline-0.0.1.tar.gz",
+                },
                 sha256 = "3fb2f5495c1a144485b3cbb2e43e27059151633460f702af0f3851cbff387ef0",
             },
             ["0.0.2"] = {
-                url    = "https://github.com/mcpplibs/cmdline/archive/refs/tags/v0.0.2.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/cmdline/archive/refs/tags/v0.0.2.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/cmdline/releases/download/0.0.2/cmdline-0.0.2.tar.gz",
+                },
                 sha256 = "4f3e2b8dc4d9f11bdd9a784a9914e889234ac305e1020282ffa03f506b75d52a",
             },
         },
         windows = {
             ["0.0.1"] = {
-                url    = "https://github.com/mcpplibs/cmdline/archive/refs/tags/0.0.1.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/cmdline/archive/refs/tags/0.0.1.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/cmdline/releases/download/0.0.1/cmdline-0.0.1.tar.gz",
+                },
                 sha256 = "3fb2f5495c1a144485b3cbb2e43e27059151633460f702af0f3851cbff387ef0",
             },
             ["0.0.2"] = {
-                url    = "https://github.com/mcpplibs/cmdline/archive/refs/tags/v0.0.2.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/cmdline/archive/refs/tags/v0.0.2.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/cmdline/releases/download/0.0.2/cmdline-0.0.2.tar.gz",
+                },
                 sha256 = "4f3e2b8dc4d9f11bdd9a784a9914e889234ac305e1020282ffa03f506b75d52a",
             },
         },

@@ -10,19 +10,28 @@ package = {
     xpm = {
         linux = {
             ["5.8.3"] = {
-                url    = "https://github.com/tukaani-project/xz/releases/download/v5.8.3/xz-5.8.3.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/tukaani-project/xz/releases/download/v5.8.3/xz-5.8.3.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/xz/releases/download/5.8.3/xz-5.8.3.tar.gz",
+                },
                 sha256 = "3d3a1b973af218114f4f889bbaa2f4c037deaae0c8e815eec381c3d546b974a0",
             },
         },
         macosx = {
             ["5.8.3"] = {
-                url    = "https://github.com/tukaani-project/xz/releases/download/v5.8.3/xz-5.8.3.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/tukaani-project/xz/releases/download/v5.8.3/xz-5.8.3.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/xz/releases/download/5.8.3/xz-5.8.3.tar.gz",
+                },
                 sha256 = "3d3a1b973af218114f4f889bbaa2f4c037deaae0c8e815eec381c3d546b974a0",
             },
         },
         windows = {
             ["5.8.3"] = {
-                url    = "https://github.com/tukaani-project/xz/releases/download/v5.8.3/xz-5.8.3.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/tukaani-project/xz/releases/download/v5.8.3/xz-5.8.3.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/xz/releases/download/5.8.3/xz-5.8.3.tar.gz",
+                },
                 sha256 = "3d3a1b973af218114f4f889bbaa2f4c037deaae0c8e815eec381c3d546b974a0",
             },
         },

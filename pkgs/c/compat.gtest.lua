@@ -15,19 +15,28 @@ package = {
     xpm = {
         linux = {
             ["1.15.2"] = {
-                url    = "https://github.com/google/googletest/archive/refs/tags/v1.15.2.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/google/googletest/archive/refs/tags/v1.15.2.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/gtest/releases/download/1.15.2/gtest-1.15.2.tar.gz",
+                },
                 sha256 = "7b42b4d6ed48810c5362c265a17faebe90dc2373c885e5216439d37927f02926",
             },
         },
         macosx = {
             ["1.15.2"] = {
-                url    = "https://github.com/google/googletest/archive/refs/tags/v1.15.2.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/google/googletest/archive/refs/tags/v1.15.2.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/gtest/releases/download/1.15.2/gtest-1.15.2.tar.gz",
+                },
                 sha256 = "7b42b4d6ed48810c5362c265a17faebe90dc2373c885e5216439d37927f02926",
             },
         },
         windows = {
             ["1.15.2"] = {
-                url    = "https://github.com/google/googletest/archive/refs/tags/v1.15.2.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/google/googletest/archive/refs/tags/v1.15.2.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/gtest/releases/download/1.15.2/gtest-1.15.2.tar.gz",
+                },
                 sha256 = "7b42b4d6ed48810c5362c265a17faebe90dc2373c885e5216439d37927f02926",
             },
         },

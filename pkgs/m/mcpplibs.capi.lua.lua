@@ -13,19 +13,28 @@ package = {
     xpm = {
         linux = {
             ["0.0.3"] = {
-                url    = "https://github.com/mcpplibs/lua/archive/refs/tags/0.0.3.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/lua/archive/refs/tags/0.0.3.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/capi.lua/releases/download/0.0.3/capi.lua-0.0.3.tar.gz",
+                },
                 sha256 = "f7f46c3cd193dc4527be5f3e5cfc29d7e322d5d3db56b9bdb060f289090088d6",
             },
         },
         macosx = {
             ["0.0.3"] = {
-                url    = "https://github.com/mcpplibs/lua/archive/refs/tags/0.0.3.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/lua/archive/refs/tags/0.0.3.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/capi.lua/releases/download/0.0.3/capi.lua-0.0.3.tar.gz",
+                },
                 sha256 = "f7f46c3cd193dc4527be5f3e5cfc29d7e322d5d3db56b9bdb060f289090088d6",
             },
         },
         windows = {
             ["0.0.3"] = {
-                url    = "https://github.com/mcpplibs/lua/archive/refs/tags/0.0.3.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/lua/archive/refs/tags/0.0.3.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/capi.lua/releases/download/0.0.3/capi.lua-0.0.3.tar.gz",
+                },
                 sha256 = "f7f46c3cd193dc4527be5f3e5cfc29d7e322d5d3db56b9bdb060f289090088d6",
             },
         },

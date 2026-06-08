@@ -10,19 +10,28 @@ package = {
     xpm = {
         linux = {
             ["2026.05.31"] = {
-                url    = "https://github.com/KhronosGroup/OpenGL-Registry/archive/a30033d3e812c9bf10094f1010374a6b15e192eb.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/KhronosGroup/OpenGL-Registry/archive/a30033d3e812c9bf10094f1010374a6b15e192eb.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/opengl/releases/download/2026.05.31/opengl-2026.05.31.tar.gz",
+                },
                 sha256 = "3dadc4ccfe4b8d3a798fb405b7067304420ff997505b67041f3edfeecc3228ae",
             },
         },
         macosx = {
             ["2026.05.31"] = {
-                url    = "https://github.com/KhronosGroup/OpenGL-Registry/archive/a30033d3e812c9bf10094f1010374a6b15e192eb.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/KhronosGroup/OpenGL-Registry/archive/a30033d3e812c9bf10094f1010374a6b15e192eb.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/opengl/releases/download/2026.05.31/opengl-2026.05.31.tar.gz",
+                },
                 sha256 = "3dadc4ccfe4b8d3a798fb405b7067304420ff997505b67041f3edfeecc3228ae",
             },
         },
         windows = {
             ["2026.05.31"] = {
-                url    = "https://github.com/KhronosGroup/OpenGL-Registry/archive/a30033d3e812c9bf10094f1010374a6b15e192eb.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/KhronosGroup/OpenGL-Registry/archive/a30033d3e812c9bf10094f1010374a6b15e192eb.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/opengl/releases/download/2026.05.31/opengl-2026.05.31.tar.gz",
+                },
                 sha256 = "3dadc4ccfe4b8d3a798fb405b7067304420ff997505b67041f3edfeecc3228ae",
             },
         },

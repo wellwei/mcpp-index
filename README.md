@@ -201,6 +201,38 @@ package = {
 }
 ```
 
+### 镜像源(GLOBAL / CN)
+
+`xpm.<平台>.<版本>.url` 除了普通字符串,还支持镜像表,为不同地区提供下载源:
+
+```lua
+["3.6.1"] = {
+    url = {
+        GLOBAL = "https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-3.6.1.tar.gz",
+        CN     = "https://gitcode.com/mcpp-res/mbedtls/releases/download/3.6.1/mbedtls-3.6.1.tar.gz",
+    },
+    sha256 = "db75d2f7f35e29cf09f7bd6734d8ee3325f29c298ef071350c5e70a40dd4f0f9",
+},
+```
+
+- **GLOBAL**(默认):上游原始地址(GitHub / 官方站点),行为与之前完全一致。
+- **CN**:[`mcpp-res`](https://gitcode.com/mcpp-res) 组织在 gitcode 上的镜像 —
+  每个库一个仓库,资源以 release 资产形式按版本 tag 发布,URL 形如
+  `https://gitcode.com/mcpp-res/<库>/releases/download/<版本>/<库>-<版本>.<ext>`。
+  CN 镜像内容与 GLOBAL 源 **逐字节一致**(同一 `sha256`),只是托管在国内可
+  快速访问的 gitcode 上。
+
+切换镜像(底层透传给 xlings 安装引擎):
+
+```bash
+mcpp self config --mirror CN       # 使用国内镜像
+mcpp self config --mirror GLOBAL   # 使用上游源(默认)
+```
+
+> 镜像表遵循 [xpkg V1 规范](https://github.com/d2learn/xim-pkgindex/blob/main/docs/V1/xpackage-spec.md)
+> 的 `url = { GLOBAL=..., CN=... }` 约定,解析优先级 `GLOBAL > CN`。`validate`
+> workflow 会校验镜像表完整性并探测每个 CN 资源可达。
+
 ### 获取方式
 
 mcpp 初次运行时自动 clone 本仓库到 `~/.mcpp/registry/data/mcpp-index/`。后续更新:
@@ -231,6 +263,7 @@ cd ~/.mcpp/registry/data/mcpp-index && git pull
 | [xlings](https://github.com/d2learn/xlings) | mcpp 底层的包安装引擎 + 沙箱环境 |
 | [xpkg V1 spec](https://github.com/d2learn/xim-pkgindex/blob/main/docs/V1/xpackage-spec.md) | 包描述文件规范 |
 | [mcpplibs](https://github.com/mcpplibs) | mcpp 生态的模块化 C++23 库集合 |
+| [mcpp-res](https://gitcode.com/mcpp-res) | 包资源的 CN 镜像组织(gitcode release 资产) |
 | [xim-pkgindex](https://github.com/d2learn/xim-pkgindex) | xlings 的通用包索引仓库 |
 
 ## 社区

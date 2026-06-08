@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["1.5.5"] = {
-                url    = "https://xorg.freedesktop.org/releases/individual/lib/libXrandr-1.5.5.tar.gz",
+                url    = {
+                    GLOBAL = "https://xorg.freedesktop.org/releases/individual/lib/libXrandr-1.5.5.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/xrandr/releases/download/1.5.5/xrandr-1.5.5.tar.gz",
+                },
                 sha256 = "23faedab4675890ba579b8103399132a139527306b18b500c6fe28e090e2a056",
             },
         },

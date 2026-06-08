@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["2025.1"] = {
-                url    = "https://xorg.freedesktop.org/releases/individual/proto/xorgproto-2025.1.tar.gz",
+                url    = {
+                    GLOBAL = "https://xorg.freedesktop.org/releases/individual/proto/xorgproto-2025.1.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/xorgproto/releases/download/2025.1/xorgproto-2025.1.tar.gz",
+                },
                 sha256 = "d6f89f65bafb8c9b735e0515882b8a1511e8e864dde5e9513e191629369f2256",
             },
         },

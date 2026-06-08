@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["1.6.0"] = {
-                url    = "https://xorg.freedesktop.org/releases/individual/lib/xtrans-1.6.0.tar.xz",
+                url    = {
+                    GLOBAL = "https://xorg.freedesktop.org/releases/individual/lib/xtrans-1.6.0.tar.xz",
+                    CN     = "https://gitcode.com/mcpp-res/xtrans/releases/download/1.6.0/xtrans-1.6.0.tar.xz",
+                },
                 sha256 = "faafea166bf2451a173d9d593352940ec6404145c5d1da5c213423ce4d359e92",
             },
         },

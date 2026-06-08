@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["1.8.13"] = {
-                url    = "https://xorg.freedesktop.org/releases/individual/lib/libX11-1.8.13.tar.gz",
+                url    = {
+                    GLOBAL = "https://xorg.freedesktop.org/releases/individual/lib/libX11-1.8.13.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/x11/releases/download/1.8.13/x11-1.8.13.tar.gz",
+                },
                 sha256 = "acf0e7cd7541110e6330ecb539441a2d53061f386ec7be6906dfde0de2598470",
             },
         },

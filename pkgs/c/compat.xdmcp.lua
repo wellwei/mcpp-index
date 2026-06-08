@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["1.1.5"] = {
-                url    = "https://xorg.freedesktop.org/releases/individual/lib/libXdmcp-1.1.5.tar.gz",
+                url    = {
+                    GLOBAL = "https://xorg.freedesktop.org/releases/individual/lib/libXdmcp-1.1.5.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/xdmcp/releases/download/1.1.5/xdmcp-1.1.5.tar.gz",
+                },
                 sha256 = "31a7abc4f129dcf6f27ae912c3eedcb94d25ad2e8f317f69df6eda0bc4e4f2f3",
             },
         },

@@ -20,19 +20,28 @@ package = {
     xpm = {
         linux = {
             ["6.1.9"] = {
-                url    = "https://github.com/ArthurSonzogni/FTXUI/archive/refs/tags/v6.1.9.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/ArthurSonzogni/FTXUI/archive/refs/tags/v6.1.9.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/ftxui/releases/download/6.1.9/ftxui-6.1.9.tar.gz",
+                },
                 sha256 = "45819c1e54914783d4a1ca5633885035d74146778a1f74e1213cdb7b76340e71",
             },
         },
         macosx = {
             ["6.1.9"] = {
-                url    = "https://github.com/ArthurSonzogni/FTXUI/archive/refs/tags/v6.1.9.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/ArthurSonzogni/FTXUI/archive/refs/tags/v6.1.9.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/ftxui/releases/download/6.1.9/ftxui-6.1.9.tar.gz",
+                },
                 sha256 = "45819c1e54914783d4a1ca5633885035d74146778a1f74e1213cdb7b76340e71",
             },
         },
         windows = {
             ["6.1.9"] = {
-                url    = "https://github.com/ArthurSonzogni/FTXUI/archive/refs/tags/v6.1.9.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/ArthurSonzogni/FTXUI/archive/refs/tags/v6.1.9.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/ftxui/releases/download/6.1.9/ftxui-6.1.9.tar.gz",
+                },
                 sha256 = "45819c1e54914783d4a1ca5633885035d74146778a1f74e1213cdb7b76340e71",
             },
         },

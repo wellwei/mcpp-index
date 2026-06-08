@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["0.9.12"] = {
-                url    = "https://xorg.freedesktop.org/releases/individual/lib/libXrender-0.9.12.tar.gz",
+                url    = {
+                    GLOBAL = "https://xorg.freedesktop.org/releases/individual/lib/libXrender-0.9.12.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/xrender/releases/download/0.9.12/xrender-0.9.12.tar.gz",
+                },
                 sha256 = "0fff64125819c02d1102b6236f3d7d861a07b5216d8eea336c3811d31494ecf7",
             },
         },

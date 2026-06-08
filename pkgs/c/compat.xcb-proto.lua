@@ -10,7 +10,10 @@ package = {
     xpm = {
         linux = {
             ["1.17.0"] = {
-                url    = "https://xorg.freedesktop.org/releases/individual/proto/xcb-proto-1.17.0.tar.xz",
+                url    = {
+                    GLOBAL = "https://xorg.freedesktop.org/releases/individual/proto/xcb-proto-1.17.0.tar.xz",
+                    CN     = "https://gitcode.com/mcpp-res/xcb-proto/releases/download/1.17.0/xcb-proto-1.17.0.tar.xz",
+                },
                 sha256 = "2c1bacd2110f4799f74de6ebb714b94cf6f80fb112316b1219480fd22562148c",
             },
         },

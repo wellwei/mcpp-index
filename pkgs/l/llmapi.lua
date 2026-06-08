@@ -13,43 +13,70 @@ package = {
     xpm = {
         linux = {
             ["0.2.4"] = {
-                url    = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.4.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.4.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/llmapi/releases/download/0.2.4/llmapi-0.2.4.tar.gz",
+                },
                 sha256 = "b1d204576ee2d2069abdac1a7e25078e605c8fae5b1cdad6cee200946cfed0f0",
             },
             ["0.2.5"] = {
-                url    = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.5.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.5.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/llmapi/releases/download/0.2.5/llmapi-0.2.5.tar.gz",
+                },
                 sha256 = "fffa1341beed98ace97e029c0e46f47f55470df6e6a7114374e73e2bfd13699f",
             },
             ["0.2.6"] = {
-                url    = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.6.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.6.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/llmapi/releases/download/0.2.6/llmapi-0.2.6.tar.gz",
+                },
                 sha256 = "d4aedb04d695c6bbf5685fad79185642aec4a48e8b4211275b752294c3eb43cc",
             },
         },
         macosx = {
             ["0.2.4"] = {
-                url    = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.4.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.4.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/llmapi/releases/download/0.2.4/llmapi-0.2.4.tar.gz",
+                },
                 sha256 = "b1d204576ee2d2069abdac1a7e25078e605c8fae5b1cdad6cee200946cfed0f0",
             },
             ["0.2.5"] = {
-                url    = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.5.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.5.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/llmapi/releases/download/0.2.5/llmapi-0.2.5.tar.gz",
+                },
                 sha256 = "fffa1341beed98ace97e029c0e46f47f55470df6e6a7114374e73e2bfd13699f",
             },
             ["0.2.6"] = {
-                url    = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.6.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.6.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/llmapi/releases/download/0.2.6/llmapi-0.2.6.tar.gz",
+                },
                 sha256 = "d4aedb04d695c6bbf5685fad79185642aec4a48e8b4211275b752294c3eb43cc",
             },
         },
         windows = {
             ["0.2.4"] = {
-                url    = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.4.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.4.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/llmapi/releases/download/0.2.4/llmapi-0.2.4.tar.gz",
+                },
                 sha256 = "b1d204576ee2d2069abdac1a7e25078e605c8fae5b1cdad6cee200946cfed0f0",
             },
             ["0.2.5"] = {
-                url    = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.5.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.5.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/llmapi/releases/download/0.2.5/llmapi-0.2.5.tar.gz",
+                },
                 sha256 = "fffa1341beed98ace97e029c0e46f47f55470df6e6a7114374e73e2bfd13699f",
             },
             ["0.2.6"] = {
-                url    = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.6.tar.gz",
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/llmapi/archive/refs/tags/0.2.6.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/llmapi/releases/download/0.2.6/llmapi-0.2.6.tar.gz",
+                },
                 sha256 = "d4aedb04d695c6bbf5685fad79185642aec4a48e8b4211275b752294c3eb43cc",
             },
         },
