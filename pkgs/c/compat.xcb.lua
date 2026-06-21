@@ -106,10 +106,20 @@ local function resolve_python()
         end
     end
 
-    local matches = os.files(path.join(python.bin, "python3.*")) or {}
-    table.sort(matches)
-    if #matches > 0 then
-        return matches[#matches]
+    -- Fallback glob. `python3.*` also matches helper scripts that share the
+    -- prefix (python3.13-config, python3.13-gdb, ...). Feeding c_client.py to
+    -- python3.13-config exits 0 while generating NOTHING, which silently
+    -- produces a broken xcb install. Keep only real interpreters
+    -- (python3 / python3.<minor>) and pick the canonical (shortest) name.
+    local interpreters = {}
+    for _, m in ipairs(os.files(path.join(python.bin, "python3*")) or {}) do
+        if path.filename(m):match("^python3%.?%d*$") then
+            table.insert(interpreters, m)
+        end
+    end
+    table.sort(interpreters)
+    if #interpreters > 0 then
+        return interpreters[1]
     end
 
     log.error("python executable not found under %s", python.bin)
@@ -151,6 +161,16 @@ function install()
             sh_quote(path.join(proto_dir, "src", name .. ".xml"))
         )
         os.exec(cmd)
+        -- Verify the generator actually produced its outputs. c_client.py can
+        -- exit 0 without writing anything (e.g. a misresolved interpreter), so
+        -- a non-failing os.exec is not proof of success. Fail the install
+        -- loudly instead of leaving a broken package that only blows up later
+        -- at compile time with `xproto.h: No such file or directory`.
+        if not os.isfile(path.join(srcdir, name .. ".h"))
+        or not os.isfile(path.join(srcdir, name .. ".c")) then
+            log.error("c_client.py did not generate %s.{h,c} (python=%s)", name, python)
+            return false
+        end
     end
 
     copy_public_headers(srcdir, pkginfo.install_dir())
