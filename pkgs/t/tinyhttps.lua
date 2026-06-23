@@ -47,6 +47,13 @@ package = {
                 },
                 sha256 = "87084c23d151818e35ba68821b5e54502e1f454cfa2145f246fb55637edebf93",
             },
+            ["0.2.6"] = {
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/tinyhttps/archive/refs/tags/0.2.6.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/tinyhttps/releases/download/0.2.6/tinyhttps-0.2.6.tar.gz",
+                },
+                sha256 = "5e0bbc4b7f2021c7b042f396908ad67f0f733dbbc2d5b85f98656e3d90ee6206",
+            },
         },
         macosx = {
             ["0.2.1"] = {
@@ -84,6 +91,13 @@ package = {
                 },
                 sha256 = "87084c23d151818e35ba68821b5e54502e1f454cfa2145f246fb55637edebf93",
             },
+            ["0.2.6"] = {
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/tinyhttps/archive/refs/tags/0.2.6.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/tinyhttps/releases/download/0.2.6/tinyhttps-0.2.6.tar.gz",
+                },
+                sha256 = "5e0bbc4b7f2021c7b042f396908ad67f0f733dbbc2d5b85f98656e3d90ee6206",
+            },
         },
         windows = {
             ["0.2.1"] = {
@@ -120,6 +134,13 @@ package = {
                     CN     = "https://gitcode.com/mcpp-res/tinyhttps/releases/download/0.2.5/tinyhttps-0.2.5.tar.gz",
                 },
                 sha256 = "87084c23d151818e35ba68821b5e54502e1f454cfa2145f246fb55637edebf93",
+            },
+            ["0.2.6"] = {
+                url    = {
+                    GLOBAL = "https://github.com/mcpplibs/tinyhttps/archive/refs/tags/0.2.6.tar.gz",
+                    CN     = "https://gitcode.com/mcpp-res/tinyhttps/releases/download/0.2.6/tinyhttps-0.2.6.tar.gz",
+                },
+                sha256 = "5e0bbc4b7f2021c7b042f396908ad67f0f733dbbc2d5b85f98656e3d90ee6206",
             },
         },
     },
