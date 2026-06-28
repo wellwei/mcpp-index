@@ -3,82 +3,107 @@ name: add-mcpp-index-package
 description: Use when adding a new third-party library/package to the mcpp-index repo — writing a pkgs/*/*.lua descriptor, setting up a GitCode CN mirror via gtc, adding a minimal example, and opening a green PR. Covers the four package shapes (C-source compat / header-only / C++23 module / external Form-A module repo), the GLOBAL+CN mirror table, lint rules, the feature (sources-only) gate, and local + CI verification.
 ---
 
-# 给 mcpp-index 新增一个库(SOP)
+# 向 mcpp-index 新增一个库(标准作业流程)
 
-把一个上游库收录进 [`mcpp-index`](https://github.com/mcpplibs/mcpp-index) 的标准流程。产出 = 一个
-`pkgs/<x>/<name>.lua` 描述符 + GitCode CN 镜像 + `tests/examples/` 最小工程 + README 一行 + 设计文档,最终
-**本地实测绿 → 开 PR → CI 全绿 → 合并**(合并后 `publish-artifact.yml` 自动重发 index artifact)。
+本文件定义将上游库收录进 [`mcpp-index`](https://github.com/mcpplibs/mcpp-index) 的标准流程。其产出包括:一个
+`pkgs/<x>/<name>.lua` 描述符、一个 GitCode CN 镜像、一个位于 `tests/examples/` 的最小工程、一条 README 记录,
+以及一份设计文档。完整流程为:本地验证通过,提交 PR,CI 全部通过,由维护者合并。合并后,`publish-artifact.yml`
+将自动重新发布 index artifact。
 
-参考真实落地案例(逐字可抄):
-- `.agents/docs/2026-06-27-add-cjson-and-nlohmann-json-plan.md`(C 源码 compat + 模块库)
-- `.agents/docs/2026-06-28-add-eigen-plan.md`(header-only + source-gated `blas` feature)
-- 既有 PR:#48(cjson + nlohmann.json),#50(eigen)。
+可直接参考的既有案例如下:
 
-> 配套参考文件(在仓库 `docs/` 下,人/agent 共用,按需读):
-> - [docs/package-types.md](../../../docs/package-types.md) —— 四种库形态的描述符模板 + 真实样例路径
-> - [docs/cn-mirror.md](../../../docs/cn-mirror.md) —— gtc / gitcode CN 镜像闭环(含无 mcpp-res 权限的回退)
-> - [docs/repository-and-schema.md](../../../docs/repository-and-schema.md) —— 仓库结构、schema、CI、关键文件、踩坑清单
+- `.agents/docs/2026-06-27-add-cjson-and-nlohmann-json-plan.md`(C 源码 compat 与模块库)。
+- `.agents/docs/2026-06-28-add-eigen-plan.md`(header-only 库及 source-gated `blas` feature)。
+- 既有 PR:#48(cjson 与 nlohmann.json)、#50(eigen)。
 
-## 何时用 / 不用
-- **用**:把一个新库(或新版本)加进 mcpp-index。两种来源都适用:
-  - **(a) 第三方上游库** —— 自己没有 mcpp 支持(如 cJSON / Eigen / nlohmann),由本仓以 `compat` 形态适配。
-  - **(b) 用户基于 mcpp 开发的库** —— 上游已经是 mcpp 工程(自带 `mcpp.toml`、`mcpp emit xpkg` 产出描述符、自有 release),
-    要登记进索引(如 `mcpplibs.*`、`tensorvia-cpu`)。这类多是 **Form A**:描述符只声明元数据 + 下载地址,无需内联构建。
-- **不用**:改 mcpp 本体、改 xlings 引擎、纯文档。那些不在本仓。
+配套参考文档位于仓库 `docs/` 目录,供人工与 agent 共同使用,可按需查阅:
 
-## 总流程(12 步)
+- [docs/package-types.md](../../../docs/package-types.md) —— 四种库形态的描述符模板与样例路径。
+- [docs/cn-mirror.md](../../../docs/cn-mirror.md) —— CN 镜像闭环,含无 `mcpp-res` 权限时的回退方案。
+- [docs/repository-and-schema.md](../../../docs/repository-and-schema.md) —— 仓库结构、schema、CI 行为、关键文件与注意事项。
 
-按顺序做;每步的细节进对应参考文件。建议用 todo 跟踪。
+## 适用范围
 
-1. **调研来源与形态**(最关键,决定模板)
-   - **先分清来源**:是 (a) 第三方上游库,还是 (b) 用户自己的 mcpp 库?
-     - (b) 自有 mcpp 库:形态已定(Form A,模块库),版本/release 上游已有 → 本步很轻,直接拿上游 `mcpp emit xpkg` 的描述符
-       或照 `pkgs/t/tensorvia-cpu.lua` 写;重点落在镜像 + 登记 + 验证。
-     - (a) 第三方库:需判形态(下面)。
-   - 上游仓库、**最新 tag/版本**(`git ls-remote --tags <repo>` → `sort -V | tail`;注意大版本跳跃,如 Eigen 3.4 → 5.x)。
-   - License、源码布局:下 tarball,`tar -tzf` 看顶层 wrap 目录 + 子目录;判断是
-     **纯头 / C 源码 / 自带 `.cppm` 模块 / 有可选组件(可做 feature)**。
-   - 算 `sha256sum`,并**复算两次确认稳定**(GitLab/部分归档会重新打包导致 sha 漂移 → CI 用 GLOBAL 拉取会校验失败)。
-2. **定形态 → 选模板**:见 [docs/package-types.md](../../../docs/package-types.md)。四类:C-source compat / header-only / C++23 module(generated wrapper)/ 外部 Form-A 模块仓。
-3. **建 CN 镜像**:`gtc` 在 gitcode `mcpp-res` org 下建仓 + 发 release,上传**与 GLOBAL 同一个 tarball**(保证 byte-identical → 同 sha)。**没有 `mcpp-res` 写权限时**:不要写镜像表,直接用 plain-string `url = "<GLOBAL 上游 release>"`(lint 允许;CN 用户回落上游),留给维护者后补镜像 —— 详见 [docs/cn-mirror.md](../../../docs/cn-mirror.md)。
-4. **写描述符** `pkgs/<x>/<name>.lua`
-   - ⚠️ **目录 `<x>` = 完整包名首字母**(`compat.eigen` → `pkgs/c/`,`nlohmann.json` → `pkgs/n/`),**不是短名**。放错本地 path index 会 `not found in local index`。
-   - 三平台 `xpm`(linux/macosx/windows),每个版本 `url = { GLOBAL=…, CN=… }` + `sha256`。
-   - 版本号写**裸版本**(`"1.2.3"`,不带前导 `v`);下载 URL 里可保留上游 `…/v1.2.3.tar.gz`。
-5. **识别可门控的可选组件 → feature**(见下"feature 机制")。只能门控 **sources**。
-6. **最小工程** `tests/examples/<short>/`(`short` = 包名去 `compat.`/`mcpplibs.` 前缀)
-   - `mcpp.toml`(`[indices].compat = { path = "../../.." }` 指回仓根)+ 一个 `src/main.*`,做一个**会失败的真断言**(`return ok?0:1`)。
-   - 若要测 feature:依赖写长式 `name = { version = "…", features = ["…"] }`。
-7. **本地实测**(用与 CI 同版本的 mcpp):见下"本地验证"。必须真跑过 `mcpp build && mcpp run` 绿。
-8. **README** 在对应表(mcpplibs 模块库 / 独立模块库 / 第三方 C/C++ 库)加一行。
-9. **设计文档** `.agents/docs/<YYYY-MM-DD>-add-<lib>-plan.md`,记录形态判断、镜像、feature 评估、实测结论、踩坑。
-10. **本地 lint**:模拟 `validate.yml` 的 lint(语法 / 必填字段 / 无前导 v / mirror 检查)。见 [docs/repository-and-schema.md](../../../docs/repository-and-schema.md)。
-11. **分支 → commit → push → PR**(从 `main` 切新分支;别直接推 main)。PR 描述写清形态、镜像、feature、实测。
-12. **盯 CI 绿**:`detect` 应只选中本库的 example(`smoke-full-linux`/`portable` 显示 `skipping`),`smoke-examples (<short>)` 绿;`mirror-cn-reachable` 覆盖新 CN url。合并交维护者。
+本流程适用于将一个新库(或库的新版本)加入 mcpp-index。被收录的库有两种来源,均适用本流程:
 
-## feature 机制(务必读准)
+- **(a) 第三方上游库**:其上游自身不提供 mcpp 支持(如 cJSON、Eigen、nlohmann),由本仓以 `compat` 形态适配。
+- **(b) 基于 mcpp 开发的库**:其上游已是 mcpp 工程(自带 `mcpp.toml`,可由 `mcpp emit xpkg` 产出描述符,且具备自有
+  release),仅需登记进索引(如 `mcpplibs.*`、`tensorvia-cpu`)。此类库通常采用 **Form A**,描述符只声明元数据与
+  下载地址,无需内联构建信息。
 
-mcpp **0.0.68** 的包描述符 `features` 表 **只能门控 `sources`**(其它子字段被 skip;源码核实见 `manifest.cppm` 的 features 解析)。
+本流程不适用于修改 mcpp 本体、修改 xlings 引擎或纯文档变更,上述内容不在本仓范围内。
+
+## 总流程(十二步)
+
+各步骤应按顺序执行,每一步的细节见对应参考文档。建议以 todo 跟踪进度。
+
+1. **调研来源与形态**(决定模板,为最关键步骤)。
+   - 首先判定来源:属于 (a) 第三方上游库,还是 (b) 基于 mcpp 开发的库。
+     - 对 (b),形态已确定(Form A 模块库),版本与 release 由上游提供,因此本步骤较为简单:可直接采用上游
+       `mcpp emit xpkg` 的描述符,或参照 `pkgs/t/tensorvia-cpu.lua` 编写;工作重心在镜像、登记与验证。
+     - 对 (a),需按下文判定形态。
+   - 确定上游仓库与**最新 tag/版本**(`git ls-remote --tags <repo>` 配合 `sort -V | tail`;须注意大版本跳跃,
+     如 Eigen 由 3.4 跃迁至 5.x)。
+   - 确认 License 与源码布局:下载 tarball,以 `tar -tzf` 查看顶层 wrap 目录与子目录,据此判定其属于
+     **纯头文件 / C 源码 / 自带 `.cppm` 模块 / 含可选组件(可实现 feature)** 中的何种形态。
+   - 计算 `sha256sum`,并**重复计算两次以确认稳定**。GitLab 等部分归档源会重新打包,导致 sha 漂移,进而使 CI
+     经 GLOBAL 拉取时校验失败。
+2. **确定形态并选择模板**:详见 [docs/package-types.md](../../../docs/package-types.md)。四类形态为:C 源码 compat、
+   header-only、C++23 module(generated wrapper)、外部 Form-A 模块仓。
+3. **建立 CN 镜像**:使用 `gtc` 在 gitcode `mcpp-res` 组织下建仓并发布 release,上传**与 GLOBAL 相同的 tarball**,
+   以保证字节一致(sha 相同)。**在不具备 `mcpp-res` 写权限时**,不应构造镜像表,而应使用纯字符串形式
+   `url = "<GLOBAL 上游 release>"`(lint 允许此形式,CN 用户将回退至上游源),镜像由维护者后续补充。详见
+   [docs/cn-mirror.md](../../../docs/cn-mirror.md)。
+4. **编写描述符** `pkgs/<x>/<name>.lua`。
+   - 目录 `<x>` **取完整包名首字母**(`compat.eigen` 对应 `pkgs/c/`,`nlohmann.json` 对应 `pkgs/n/`),
+     而非短名。放置错误将导致本地 path index 报 `not found in local index`。
+   - `xpm` 须覆盖三平台(linux/macosx/windows),每个版本包含 `url = { GLOBAL=…, CN=… }` 与 `sha256`。
+   - 版本号采用**裸版本**(如 `"1.2.3"`),不含前导 `v`;下载 URL 中可保留上游的 `…/v1.2.3.tar.gz` 形式。
+5. **识别可门控的可选组件并实现 feature**(参见下文“feature 机制”)。feature 仅能门控 **sources**。
+6. **编写最小工程** `tests/examples/<short>/`(`short` 为包名去除 `compat.`/`mcpplibs.` 前缀后的结果)。
+   - 包含 `mcpp.toml`(其 `[indices].compat = { path = "../../.." }` 指回仓根)与一个 `src/main.*`,
+     后者须包含**可失败的有效断言**(`return ok ? 0 : 1`)。
+   - 如需测试 feature,依赖采用长式声明 `name = { version = "…", features = ["…"] }`。
+7. **本地验证**(使用与 CI 相同版本的 mcpp,详见下文“本地验证”)。必须实际执行 `mcpp build` 与 `mcpp run` 并通过。
+8. **更新 README**:在对应分类表中新增一条记录。
+9. **撰写设计文档** `.agents/docs/<YYYY-MM-DD>-add-<lib>-plan.md`,记录形态判定、镜像、feature 评估、验证结论
+   与注意事项。
+10. **本地 lint**:在本地复现 `validate.yml` 的 lint 检查(语法、必填字段、无前导 v、镜像表校验)。详见
+    [docs/repository-and-schema.md](../../../docs/repository-and-schema.md)。
+11. **提交变更**:由 `main` 切出新分支,依次 commit、push、开 PR(不应直接推送 `main`)。PR 描述应载明形态、镜像、
+    feature 与验证结论。
+12. **确认 CI 通过**:`detect` 应仅选中本库对应的 example(`smoke-full-linux` 与 `smoke-portable` 显示 `skipping`),
+    `smoke-examples (<short>)` 通过,`mirror-cn-reachable` 覆盖新增 CN url。合并由维护者执行。
+
+## feature 机制
+
+mcpp **0.0.68** 的包描述符 `features` 表**仅能门控 `sources`**;其余子字段会被解析器忽略(经 `manifest.cppm` 的
+features 解析逻辑确认)。
 
 ```lua
 mcpp = {
-    sources  = { "*/core.c" },                 -- 默认总编
+    sources  = { "*/core.c" },                 -- 默认始终编译
     features = {
-        ["extra"] = { sources = { "*/extra.c" } },  -- 默认排除;features=["extra"] 时编入同一个 lib 目标
+        ["extra"] = { sources = { "*/extra.c" } },  -- 默认排除;请求 features=["extra"] 时编入同一 lib 目标
     },
 }
 ```
-- 消费侧:`dep = { version = "…", features = ["extra"] }`。
-- 真实例:`compat.gtest` 的 `main`(gtest_main.cc)、`compat.cjson` 的 `utils`(cJSON_Utils.c)、`compat.eigen` 的 `blas`(`*/blas/*.cpp` + `*/blas/f2c/*.c`)。
-- **判定"可不可以做 feature"**:这个可选组件是不是**额外的可编译源码**?是 → 能门控。
-  纯头(如 Eigen `unsupported/`,与核共享 include 根,藏不住)→ 不能。
-  编译 **define**(如 `EIGEN_MPL2_ONLY`、`EIGEN_USE_BLAS`)→ 当前 feature 表带不了 → 不能(留注释,待 mcpp 支持 define/cflags)。
-- **glob**:支持 `*`(段内)与 `**`(跨段),所以 `*/blas/*.cpp`、`*/foo/**/*.c` 都行。
-- **必须做负向验证**:不带 feature 时那个符号/源应**确实缺失**(链接 `undefined reference` 或编译找不到),证明门控真生效——不是默认就编进去了。
+
+- 消费侧声明:`dep = { version = "…", features = ["extra"] }`。
+- 既有实例:`compat.gtest` 的 `main`(gtest_main.cc)、`compat.cjson` 的 `utils`(cJSON_Utils.c)、`compat.eigen`
+  的 `blas`(`*/blas/*.cpp` 与 `*/blas/f2c/*.c`)。
+- 判定某可选组件能否实现为 feature 的准则:该组件是否为**额外的可编译源码**。若是,则可门控。纯头文件(如 Eigen 的
+  `unsupported/`,与核心共享 include 根,无法隐藏)不可门控;编译期 **define**(如 `EIGEN_MPL2_ONLY`、
+  `EIGEN_USE_BLAS`)当前无法由 feature 表携带,因而不可门控,应在描述符中加注释说明,待 mcpp 支持 define/cflags
+  后再实现。
+- glob 规则:支持 `*`(段内匹配)与 `**`(跨段匹配),因此 `*/blas/*.cpp`、`*/foo/**/*.c` 均合法。
+- **须进行负向验证**:在不启用 feature 时,对应的符号或源码应**确实缺失**(表现为链接期 `undefined reference`
+  或编译期找不到),以此证明门控确实生效,而非默认即被编入。
 
 ## 本地验证(与 CI 同版本)
 
-CI 的 mcpp 版本 = `.github/workflows/validate.yml` 的 `env.MCPP_VERSION`。**用同一版本本地跑**,别用恰好装着的旧版。
+CI 所用 mcpp 版本由 `.github/workflows/validate.yml` 的 `env.MCPP_VERSION` 指定。本地验证应使用同一版本,而非本地
+恰好安装的其它版本。
 
 ```bash
 MV=$(grep -oP 'MCPP_VERSION:\s*"\K[0-9.]+' .github/workflows/validate.yml)
@@ -88,20 +113,24 @@ root="$PWD/mcpp-$MV-linux-x86_64"
 mkdir -p ~/.mcpp/registry && cp -a "$root/registry/." ~/.mcpp/registry/
 export MCPP="$root/bin/mcpp"
 export MCPP_VENDORED_XLINGS="$root/registry/bin/xlings"
-export MCPP_INDEX_MIRROR=GLOBAL          # CI example 走 GLOBAL;CN 由 mirror-cn-reachable 单独兜
+export MCPP_INDEX_MIRROR=GLOBAL          # CI example 使用 GLOBAL;CN 由 mirror-cn-reachable 单独校验
 MCPP="$MCPP" bash tests/run_example.sh <short>
 ```
-- 输出末尾要有你的断言行 + `OK: <short>`。
-- run_example.sh 会 `rm -rf target .mcpp` 从干净态走真实管线(fetch→generate→compile→link→run)。
-- 想直接看头/源:解包在 `tests/examples/<short>/.mcpp/.xlings/data/xpkgs/<idx>-x-<name>/<ver>/<wrap>/`。
 
-## 红线 / 常见错误
+- 输出末尾应包含断言行与 `OK: <short>`。
+- `run_example.sh` 会执行 `rm -rf target .mcpp`,自干净状态走完整管线(fetch、generate、compile、link、run)。
+- 如需查看头文件或源码,解包结果位于 `tests/examples/<short>/.mcpp/.xlings/data/xpkgs/<idx>-x-<name>/<ver>/<wrap>/`。
 
-- ❌ 把 `compat.foo.lua` 放进 `pkgs/f/`。✅ 放 `pkgs/c/`(完整名首字母)。
-- ❌ 版本写 `"v1.2.3"`。✅ 裸 `"1.2.3"`(lint 会拦前导 v)。
-- ❌ CN 镜像传了"加工过"的包(≠ GLOBAL)。✅ 传 GLOBAL 同一个 tarball,sha 一致;否则破坏 GLOBAL/CN 一致性。
-- ❌ 只 `mcpp build` 不 `run`,或例子里没有真断言。✅ 真跑 + `return ok?0:1`。
-- ❌ 宣称"做了 feature"却没负向验证。✅ 证明默认确实不含。
-- ❌ 没对齐 CI 的 mcpp 版本,本地绿 CI 红。✅ 读 `MCPP_VERSION`。
-- ❌ 直接 push `main`。✅ 切分支开 PR。
-- 完成前遵循 `verification-before-completion`:**贴出真实命令输出**再说"绿/完成",不要凭感觉。
+## 常见错误与规避
+
+| 错误做法 | 正确做法 |
+|----------|----------|
+| 将 `compat.foo.lua` 置于 `pkgs/f/` | 置于 `pkgs/c/`,目录取完整包名首字母 |
+| 版本写作 `"v1.2.3"` | 采用裸版本 `"1.2.3"`,lint 会拦截前导 v |
+| CN 镜像上传经改动的包(与 GLOBAL 不一致) | 上传与 GLOBAL 相同的 tarball,sha 一致,以维持 GLOBAL/CN 一致性 |
+| 仅执行 `mcpp build` 而不 `run`,或示例缺少有效断言 | 实际运行,并以 `return ok ? 0 : 1` 断言 |
+| 声称实现了 feature 却未做负向验证 | 验证默认构建确实不含该组件 |
+| 未对齐 CI 的 mcpp 版本,本地通过而 CI 失败 | 读取 `MCPP_VERSION` 并使用同一版本 |
+| 直接推送 `main` | 切出分支并提交 PR |
+
+完成前应遵循 `verification-before-completion`:在声明“通过/完成”之前,须给出真实命令输出作为证据。
