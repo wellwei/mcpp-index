@@ -1,292 +1,52 @@
 # mcpp-index
 
 > [`mcpp`](https://github.com/mcpp-community/mcpp) 构建工具的默认包索引仓库
->
-> 在线浏览: **https://mcpplibs.github.io/mcpp-index/**
+> · 在线浏览所有包 **https://mcpplibs.github.io/mcpp-index/**
 
-## 快速使用
+收录可被 `mcpp` 直接 `add` 的 C++23 包:既有 `import` 即用的模块化库,也有以 `compat` 形态从上游源码/头
+构建的第三方 C/C++ 库。每个包是一个 `pkgs/<首字母>/<包名>.lua` 描述文件。
 
-```bash
-mcpp add ftxui@6.1.9       # 添加依赖到 mcpp.toml
-mcpp build                  # 自动拉取源码 + 构建
-```
-
-## 已收录的包
-
-### mcpplibs 模块化库
-
-| 包名 | 版本 | 简介 | 仓库 |
-|------|------|------|------|
-| `mcpplibs.cmdline` | 0.0.2 | 命令行解析框架 — `import mcpplibs.cmdline;` | [mcpplibs/cmdline](https://github.com/mcpplibs/cmdline) |
-| `mcpplibs.tinyhttps` | 0.2.2 | 轻量 HTTP/HTTPS 客户端(SSE 流式) — `import mcpplibs.tinyhttps;` | [mcpplibs/tinyhttps](https://github.com/mcpplibs/tinyhttps) |
-| `mcpplibs.llmapi` | 0.2.5 | 大语言模型 API 客户端(OpenAI/Anthropic 兼容) — `import mcpplibs.llmapi;` | [mcpplibs/llmapi](https://github.com/mcpplibs/llmapi) |
-| `mcpplibs.capi.lua` | 0.0.3 | Lua 5.4 C API 的 C++23 模块封装 — `import mcpplibs.capi.lua;` | [mcpplibs/lua](https://github.com/mcpplibs/lua) |
-| `mcpplibs.xpkg` | 0.0.40 | xpkg V1 规范的 C++23 参考实现 — `import mcpplibs.xpkg;` | [openxlings/libxpkg](https://github.com/openxlings/libxpkg) |
-| `mcpplibs.templates` | 0.0.1 | 最小化模块库模板 — `import mcpplibs.templates;` | [mcpplibs/templates](https://github.com/mcpplibs/templates) |
-
-### 独立模块化库
-
-| 包名 | 版本 | 简介 | 仓库 |
-|------|------|------|------|
-| `imgui` | 0.0.1 | Dear ImGui C++23 模块封装 — `import imgui.core;` / `import imgui.backend.glfw_opengl3;` | [mcpplibs/imgui-m](https://github.com/mcpplibs/imgui-m) |
-| `nlohmann.json` | 3.12.0 | JSON for Modern C++,开箱即用的 C++23 模块 — `import nlohmann.json;` | [nlohmann/json](https://github.com/nlohmann/json) |
-
-### 第三方 C/C++ 库
-
-| 包名 | 版本 | 简介 |
-|------|------|------|
-| `ftxui` | 6.1.9 | C++ 函数式终端 UI 库(screen + dom + component) |
-| `glfw` | 3.4 | GLFW 窗口与输入库(X11/null 后端源码构建) |
-| `gtest` | 1.15.2 | Google Test 测试框架 |
-| `cjson` | 1.7.19 | 超轻量 ANSI C JSON 解析库(`#include <cJSON.h>`,`compat` 源码构建) |
-| `eigen` | 5.0.1 | C++ 模板线性代数库(header-only,`#include <Eigen/Dense>`;`unsupported/` 实验模块亦可用;`features = ["blas"]` 编入 Eigen 参考 BLAS) |
-| `imgui` | 1.92.8 | Dear ImGui immediate-mode GUI 核心源码 |
-| `opengl` | 2026.05.31 | Khronos OpenGL API 头文件 |
-| `glx-runtime` | 2026.06.03 | Linux host GLVND/GLX/OpenGL runtime adapter |
-| `khrplatform` | 2026.05.31 | Khronos KHR platform 头文件 |
-| `xorgproto` | 2025.1 | X.Org protocol 头文件 |
-| `xtrans` | 1.6.0 | X.Org transport support headers/source snippets |
-| `xau` | 1.0.12 | X authorization runtime library(`libXau.so`) |
-| `xdmcp` | 1.1.5 | X Display Manager Control Protocol runtime library(`libXdmcp.so`) |
-| `xcb-proto` | 1.17.0 | XCB protocol XML definitions and generator metadata |
-| `xcb` | 1.17.0 | X C Binding runtime library(`libxcb.so`) |
-| `x11` | 1.8.13 | Xlib runtime library(`libX11.so`) and public headers |
-| `xcursor` | 1.2.3 | Xcursor runtime library(`libXcursor.so`) and public headers |
-| `xext` | 1.3.7 | Xext runtime library(`libXext.so`) and public headers |
-| `xfixes` | 6.0.2 | Xfixes runtime library(`libXfixes.so`) and public headers |
-| `xi` | 1.8.3 | XInput runtime library(`libXi.so`) and public headers |
-| `xinerama` | 1.1.6 | Xinerama runtime library(`libXinerama.so`) and public headers |
-| `xrandr` | 1.5.5 | Xrandr runtime library(`libXrandr.so`) and public headers |
-| `xrender` | 0.9.12 | Xrender runtime library(`libXrender.so`) and public headers |
-| `mbedtls` | 3.6.1 | TLS/加密库(纯 C) |
-| `lua` | 5.4.7 | Lua 脚本语言(纯 C 嵌入式库) |
-| `zlib` | 1.3.2 | DEFLATE 压缩库 |
-| `bzip2` | 1.0.8 | bzip2 压缩库 |
-| `lz4` | 1.10.0 | LZ4 压缩库 |
-| `zstd` | 1.5.7 | Zstandard 压缩库 |
-| `xz` | 5.8.3 | XZ Utils liblzma 压缩库 |
-| `libarchive` | 3.8.7 | 多格式归档与压缩库 |
-
-### 依赖关系链
-
-```
-mcpplibs.llmapi
-  └── mcpplibs.tinyhttps
-        └── mbedtls              ← mcpp 自动传递,无需手动声明
-
-mcpplibs.xpkg
-  └── mcpplibs.capi.lua
-        └── lua                  ← 同上
-
-imgui
-  ├── compat.imgui
-  ├── compat.glfw
-  │     ├── compat.opengl
-  │     └── compat.glx-runtime
-  │           └── compat.xext → compat.x11
-  │                            ← Linux GLX/OpenGL driver runtime provider
-  └── compat.opengl              ← 消费者只需要 import imgui.* 模块
-
-libarchive
-  ├── zlib
-  ├── bzip2
-  ├── lz4
-  ├── zstd
-  └── xz                         ← 压缩后端自动传递
-
-glfw
-  ├── opengl
-  │     └── khrplatform           ← GLFW/glfw3.h 所需 OpenGL/KHR 头文件
-  ├── glx-runtime
-  │     └── xext → x11            ← GLFW GLX dlopen 所需 host GLVND/driver runtime
-  └── x11 / xcursor / xext / xfixes / xi
-      / xinerama / xorgproto / xrandr / xrender
-                                  ← GLFW Linux X11 后端所需 runtime/header 闭包
-
-xau / xdmcp
-  └── xorgproto                   ← X11 底层 runtime 库的协议头文件
-
-xcb
-  ├── xcb-proto                   ← hook 内生成 xcb 协议源文件
-  ├── xau
-  └── xdmcp
-
-x11
-  ├── xcb
-  ├── xorgproto
-  └── xtrans                      ← Xlib/XIM transport 源码片段
-```
-
-mcpp 0.0.3+ 的 transitive walker 自动沿链路传播头文件和依赖,消费者只需声明直接依赖。
-
-> 当前 X11/XCB/Xau/Xdmcp 以及 GLFW 需要的 Xcursor/Xext/Xfixes/Xi/Xinerama/
-> Xrandr/Xrender 都已按上游源码提供 runtime `.so`,并声明标准 ELF SONAME
-> (如 `libX11.so.6`、`libxcb.so.1`)。`compat.glx-runtime` 是 Linux host
-> GLVND/GLX/OpenGL driver runtime adapter,提供 GLFW 上游 `dlopen` 需要的
-> `libGLX.so.0`/`libGL.so.1`/`libGL.so` runtime 目录,并通过 `compat.xext`
-> 带入 host GLX 库常见的 X11/Xext ABI 依赖闭包。
-> 窗口运行时仍需要宿主环境提供可用的 X server/GLX/OpenGL 驱动。
-
-### 单库示例工程(`tests/examples/<pkg>/`)
-
-每个库可以有一个最小可构建工程(自带 `mcpp.toml` + 源码,`[indices]` 相对指回本仓),
-既是文档也是测试。CI 在 PR 上**只跑改动到的库**对应的示例(`tests/run_example.sh`),
-其余情况(push / nightly / 改动脚手架)才跑下面的全量 smoke。
+## 使用
 
 ```bash
-MCPP=/path/to/mcpp tests/run_example.sh cjson           # #include <cJSON.h>
-MCPP=/path/to/mcpp tests/run_example.sh nlohmann.json   # import nlohmann.json;
-# 等价于:cd tests/examples/cjson && mcpp run
+mcpp add ftxui@6.1.9            # 添加依赖到 mcpp.toml
+mcpp build                     # 自动拉取源码 + 构建(依赖沿链路自动传递)
+
+mcpp search <keyword>          # 搜索 / 刷新索引
+mcpp self config --mirror CN   # 切到国内镜像(默认走 GLOBAL 上游源)
 ```
 
-### 本地 smoke 验证(全量回归)
+完整包列表见 **[在线索引站](https://mcpplibs.github.io/mcpp-index/)**。
 
-```bash
-MCPP=/path/to/mcpp tests/smoke_compat_core.sh
-MCPP=/path/to/mcpp tests/smoke_compat_imgui.sh
-MCPP=/path/to/mcpp tests/smoke_compat_archive.sh
-MCPP=/path/to/mcpp tests/smoke_imgui_module.sh
-```
+## 包生态与贡献
 
-该脚本会通过当前 checkout 作为本地 path index 创建临时 mcpp 项目,验证:
+收录两类包:
 
-- `compat.gtest`/`compat.ftxui`/`compat.lua`/`compat.mbedtls` 能用上游
-  `#include <...>` API 构建并运行最小用例
-- `compat.opengl`/`compat.khrplatform` 能提供 GLFW/OpenGL 常见头文件闭包
-- `compat.imgui@1.92.8` core 能构建并运行一个 headless ImGui frame
-- `imgui@0.0.1` 模块包能通过 `[dependencies] imgui = "0.0.1"` 构建并运行
-  `import imgui.core;` / `import imgui.backend.glfw_opengl3;` 最小用例
-- `compat.glfw@3.4` 能构建、运行 `glfwInit()` smoke,并链接 X11 扩展 runtime `.so`
-- `compat.xau@1.0.12`/`compat.xdmcp@1.1.5` 能构建、运行并链接 runtime `.so`
-- `compat.xcb@1.17.0` 能构建、运行并链接 `libxcb.so`
-- `compat.x11@1.8.13` 能构建、运行并链接 `libX11.so` → `libxcb.so`
-- `compat.xcursor`/`compat.xext`/`compat.xfixes`/`compat.xi`/`compat.xinerama`/
-  `compat.xrandr`/`compat.xrender` 能构建、运行并链接对应 `libX*.so`
-- `compat.libarchive` 能连同 `zlib`/`bzip2`/`lz4`/`zstd`/`xz` 压缩后端构建并运行
+- **原生 mcpp 模块库** — 以 C++23 模块发布、`import` 即用(如 `mcpplibs.*`、`nlohmann.json`、`imgui`)。
+  上游多自带 `mcpp.toml`,描述文件只声明元数据与下载地址。
+- **第三方 C/C++ 库(`compat`)** — 上游无 mcpp 支持,在描述文件里内联构建信息:header-only、纯 C 源码、
+  C++23 module wrapper 等不同形态,可选组件经 `features` 门控,并配 GitCode CN 镜像。
 
-有窗口的 ImGui + GLFW + OpenGL demo 单独放在可选 smoke 中:
+**新增一个包** → 参考 agent skill [`add-mcpp-index-package`](.agents/skills/add-mcpp-index-package/SKILL.md):
+完整 SOP —— 四种库形态模板、`gtc` CN 镜像闭环、`features` 门控、本地 + CI 验证。字段规范见
+[mcpp 扩展字段文档](https://github.com/mcpp-community/mcpp/blob/main/docs/04-schema-xpkg-extension.md)。
 
-```bash
-MCPP=/path/to/mcpp tests/smoke_compat_imgui_window.sh
-MCPP=/path/to/mcpp MCPP_INDEX_RUN_WINDOW_SMOKE=1 tests/smoke_compat_imgui_window.sh
-```
-
-默认只验证 demo 构建和 X11 runtime 链接闭包。显式设置
-`MCPP_INDEX_RUN_WINDOW_SMOKE=1` 后才会运行隐藏窗口帧渲染,此时需要当前
-`DISPLAY` 可用,并且宿主机提供 GLVND/GLX/OpenGL 驱动 runtime。脚本会把
-宿主 GL runtime 和 compat X11 runtime 组装到临时 `LD_LIBRARY_PATH` 中,
-避免系统 X11 库覆盖 mcpp 构建出的 `libX11.so`/`libxcb.so`。
-
-## 包描述文件
-
-每个包对应一个 `pkgs/<首字母>/<包名>.lua` 文件,遵循 [xpkg V1 规范](https://github.com/d2learn/xim-pkgindex/blob/main/docs/V1/xpackage-spec.md)。
-
-### 两种形式
-
-**Form A** — 上游自带 `mcpp.toml`,描述文件只声明元数据和下载地址:
-
-```lua
-package = {
-    spec = "1",
-    name = "mcpplibs.tinyhttps",
-    xpm = {
-        linux   = { ["0.2.2"] = { url = "...", sha256 = "..." } },
-        macosx  = { ["0.2.2"] = { url = "...", sha256 = "..." } },
-        windows = { ["0.2.2"] = { url = "...", sha256 = "..." } },
-    },
-}
-```
-
-**Form B** — 上游没有 `mcpp.toml`,在描述文件里内联构建信息:
-
-```lua
-package = {
-    spec = "1",
-    name = "ftxui",
-    xpm = { ... },
-    mcpp = {
-        include_dirs = { "*/include", "*/src" },
-        sources = {
-            "*/src/ftxui/**/*.cpp",
-            "!*/src/ftxui/**/*_test.cpp",      -- glob 排除(mcpp 0.0.4+)
-            "!*/src/ftxui/**/*_fuzzer.cpp",
-        },
-        targets = { ["ftxui"] = { kind = "lib" } },
-    },
-}
-```
-
-### 镜像源(GLOBAL / CN)
-
-`xpm.<平台>.<版本>.url` 除了普通字符串,还支持镜像表,为不同地区提供下载源:
-
-```lua
-["3.6.1"] = {
-    url = {
-        GLOBAL = "https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-3.6.1.tar.gz",
-        CN     = "https://gitcode.com/mcpp-res/mbedtls/releases/download/3.6.1/mbedtls-3.6.1.tar.gz",
-    },
-    sha256 = "db75d2f7f35e29cf09f7bd6734d8ee3325f29c298ef071350c5e70a40dd4f0f9",
-},
-```
-
-- **GLOBAL**(默认):上游原始地址(GitHub / 官方站点),行为与之前完全一致。
-- **CN**:[`mcpp-res`](https://gitcode.com/mcpp-res) 组织在 gitcode 上的镜像 —
-  每个库一个仓库,资源以 release 资产形式按版本 tag 发布,URL 形如
-  `https://gitcode.com/mcpp-res/<库>/releases/download/<版本>/<库>-<版本>.<ext>`。
-  CN 镜像内容与 GLOBAL 源 **逐字节一致**(同一 `sha256`),只是托管在国内可
-  快速访问的 gitcode 上。
-
-切换镜像(底层透传给 xlings 安装引擎):
-
-```bash
-mcpp self config --mirror CN       # 使用国内镜像
-mcpp self config --mirror GLOBAL   # 使用上游源(默认)
-```
-
-> 镜像表遵循 [xpkg V1 规范](https://github.com/d2learn/xim-pkgindex/blob/main/docs/V1/xpackage-spec.md)
-> 的 `url = { GLOBAL=..., CN=... }` 约定,解析优先级 `GLOBAL > CN`。`validate`
-> workflow 会校验镜像表完整性并探测每个 CN 资源可达。
-
-### 获取方式
-
-mcpp 初次运行时自动 clone 本仓库到 `~/.mcpp/registry/data/mcpp-index/`。后续更新:
-
-```bash
-mcpp search <keyword>    # 触发索引刷新 + 搜索
-```
-
-也可手动拉取:
-
-```bash
-cd ~/.mcpp/registry/data/mcpp-index && git pull
-```
-
-## 添加新包
-
-1. Fork 本仓库
-2. 在 `pkgs/<首字母>/` 下创建 `<包名>.lua`,参考现有文件([compat.mbedtls.lua](pkgs/c/compat.mbedtls.lua)、[compat.ftxui.lua](pkgs/c/compat.ftxui.lua))
-3. 提交 PR — `validate` workflow 自动 lint,`deploy-site` 合入后自动发布到浏览站
-
-详细格式说明见 [mcpp 扩展字段文档](https://github.com/mcpp-community/mcpp/blob/main/docs/04-schema-xpkg-extension.md)。
+> 开 PR 后 `validate` 自动 lint + 按改动库选跑示例;合入后 `deploy-site` 发布到浏览站。
 
 ## 相关链接
 
 | 项目 | 说明 |
 |------|------|
 | [mcpp](https://github.com/mcpp-community/mcpp) | 现代 C++23 构建 & 包管理工具 |
-| [xlings](https://github.com/d2learn/xlings) | mcpp 底层的包安装引擎 + 沙箱环境 |
+| [xlings](https://github.com/d2learn/xlings) | mcpp 底层包安装引擎 + 沙箱 |
 | [xpkg V1 spec](https://github.com/d2learn/xim-pkgindex/blob/main/docs/V1/xpackage-spec.md) | 包描述文件规范 |
-| [mcpplibs](https://github.com/mcpplibs) | mcpp 生态的模块化 C++23 库集合 |
-| [mcpp-res](https://gitcode.com/mcpp-res) | 包资源的 CN 镜像组织(gitcode release 资产) |
-| [xim-pkgindex](https://github.com/d2learn/xim-pkgindex) | xlings 的通用包索引仓库 |
+| [mcpplibs](https://github.com/mcpplibs) | mcpp 生态的模块化 C++23 库 |
+| [mcpp-res](https://gitcode.com/mcpp-res) | 包资源 CN 镜像组织(gitcode) |
 
 ## 社区
 
-- **Issues / 反馈**: [mcpp issues](https://github.com/mcpp-community/mcpp/issues) · [mcpp-index issues](https://github.com/mcpp-community/mcpp-index/issues)
-- **讨论 / 论坛**: [d2learn 论坛](https://forum.d2learn.org)
-- **mcpplibs 库贡献**: 各库仓库接受 PR,CI 使用 mcpp 构建验证
+[mcpp issues](https://github.com/mcpp-community/mcpp/issues) · [d2learn 论坛](https://forum.d2learn.org)
 
 ## License
 
-包描述文件: CC0。各上游库保留其自身许可证。
+包描述文件 CC0;各上游库保留其自身许可证。
