@@ -39,7 +39,7 @@ mcpp build                  # 自动拉取源码 + 构建
 | `glfw` | 3.4 | GLFW 窗口与输入库(X11/null 后端源码构建) |
 | `gtest` | 1.15.2 | Google Test 测试框架 |
 | `cjson` | 1.7.19 | 超轻量 ANSI C JSON 解析库(`#include <cJSON.h>`,`compat` 源码构建) |
-| `eigen` | 5.0.1 | C++ 模板线性代数库(header-only,`#include <Eigen/Dense>`;`unsupported/` 实验模块亦可用) |
+| `eigen` | 5.0.1 | C++ 模板线性代数库(header-only,`#include <Eigen/Dense>`;`unsupported/` 实验模块亦可用;`features = ["blas"]` 编入 Eigen 参考 BLAS) |
 | `imgui` | 1.92.8 | Dear ImGui immediate-mode GUI 核心源码 |
 | `opengl` | 2026.05.31 | Khronos OpenGL API 头文件 |
 | `glx-runtime` | 2026.06.03 | Linux host GLVND/GLX/OpenGL runtime adapter |

@@ -32,19 +32,32 @@ Eigen 无可编译源(纯模板头),故:
 - 用一个 trivial anchor TU(`mcpp_generated/eigen_anchor.c`)给 mcpp 一个可构建的 `lib` 目标(同 opengl/khrplatform)。
 - `language=c++23`、`c_standard=c11`(anchor 是 C)、`deps={}`。
 
-## 3. feature 机制评估 —— 当前不适用(已记录原因)
+## 3. feature 机制 —— `blas`(已落地)
 
-用户要求"如果 Eigen 有类似 feature 的东西,可走 mcpp feature 机制"。结论:**当前(mcpp 0.0.68)不适用**,原因经源码核实:
+用户要求"如果 Eigen 有类似 feature 的东西,可走 mcpp feature 机制"。结论:**有,且已实现 `blas` feature**。
 
-- mcpp 包描述符的 `features` 表 **只能门控 `sources`**(feature 贡献额外源码 glob,默认排除、请求时编入 ——
-  见 `compat.cjson` 的 `utils`、`compat.gtest` 的 `main`;源码 `manifest.cppm` 中 feature 子字段仅识别 `sources`,
-  其余被 skip)。
-- Eigen 是 header-only,**没有可门控的可选源码**。其天然的"可选轴"是 `unsupported/` 实验模块,但它与 `Eigen/`
-  **同处 tarball 根** —— 任何暴露稳定核(`*`)的 include path 都不可避免地一并暴露 `unsupported/`(已实测:
-  `<unsupported/Eigen/MatrixFunctions>` / `<AutoDiff>` 直接可编)。**既无源可门控,也无法用 sources-only 的
-  feature 把头藏起来**。
-- 其它 Eigen 开关(`EIGEN_MPL2_ONLY`、`EIGEN_USE_BLAS/LAPACKE`…)是编译 **define**,feature 表同样不能携带。
-- `blas/` 是唯一可门控的真实源,但需 Fortran(`.f`)+ 独立 lib 目标,feature 仅能往既有目标 *追加* 源 → 不匹配,过重。
+> ⚠️ **修正**:初稿曾错判"`blas/` 需 Fortran、过重、不做"。复核 `blas/CMakeLists.txt` 的 `EigenBlas_SRCS`:
+> 库源是 `blas/*.cpp`(5 个:single/double/complex_single/complex_double/xerbla)+ `blas/f2c/*.c`(18 个,
+> **f2c = Fortran 已转 C**)。**唯一的 `.f` 全在 `blas/testing/`(测试套件),不参与库构建** → 纯 C++/C 即可编。
+
+- **机制**:mcpp 包描述符的 `features` 表门控 `sources`(默认排除、请求时编入既有 lib 目标 —— 同 `compat.cjson`
+  的 `utils`、`compat.gtest` 的 `main`)。Eigen 的 `eigen_blas` 正好匹配:
+  ```lua
+  features = { ["blas"] = { sources = { "*/blas/*.cpp", "*/blas/f2c/*.c" } } }
+  ```
+  默认不编;`eigen = { version = "5.0.1", features = ["blas"] }` 时编入 `eigen` lib,暴露标准 BLAS 符号
+  (`sgemm_`/`dgemm_`/`ddot_`…,Fortran ABI)。`blas/common.h` 用相对 `../Eigen/Core` 取头,源码须就地编译,
+  `*/blas/*.cpp` glob 保证它们留在解包树内 → OK。
+- **实测(mcpp 0.0.68)**:
+  - 开 feature:example `eigen ok=1 core=1 blas(dgemm)=1 C=[1 3 2 4]`。
+  - 关 feature(负向):同样调用 `dgemm_` → `undefined reference to 'dgemm_'`(证明默认确实排除、门控生效)。
+
+### 3.1 其余"非 feature"项(原因仍成立)
+- `unsupported/` 实验模块是 header-only,与 `Eigen/` 同处 tarball 根 —— 核 include path(`*`)已一并暴露它
+  (实测 `<unsupported/Eigen/MatrixFunctions>` / `<AutoDiff>` 直接可编);sources-only 门控无法"藏头",故无可门控、
+  直接可用。
+- Eigen 的编译 **define** 开关(`EIGEN_MPL2_ONLY`、`EIGEN_USE_BLAS/LAPACKE`…)feature 表(0.0.68)不能携带;
+  若将来 feature 支持 define/cflags,`mpl2only`(→ `-DEIGEN_MPL2_ONLY`)是干净接入点。
 
 → 故本期 **暴露完整头集(core + unsupported)、不加 feature**,并在 descriptor 注释中完整记录该分析。
 若 mcpp 未来允许 feature 携带 define/cflags,`mpl2only`(→ `-DEIGEN_MPL2_ONLY`)是干净的接入点。
@@ -62,8 +75,9 @@ CN url:`https://gitcode.com/mcpp-res/eigen/releases/download/5.0.1/eigen-5.0.1.t
 
 ## 5. 最小工程 + CI
 
-- `tests/examples/eigen/{mcpp.toml, src/main.cpp}` —— `#include <Eigen/Dense>`,2x2 线代往返断言
-  (`A*x`、determinant、dot、QR solve)。纯文本 include,不混 `import std;`。
+- `tests/examples/eigen/{mcpp.toml, src/main.cpp}` —— 既测 header-only 核(`#include <Eigen/Dense>`,2x2 线代往返:
+  `A*x` / determinant / QR solve),又取 `features = ["blas"]` 调 `dgemm_` 验证 BLAS feature 端到端。纯文本 include,
+  不混 `import std;`。
 - `validate.yml` 的 detect 把 `compat.eigen.lua` → `eigen` → 命中 `tests/examples/eigen` → `smoke-examples (eigen)` 单跑。
 - `mirror-cn-reachable` 覆盖新 CN url。
 
@@ -71,7 +85,8 @@ CN url:`https://gitcode.com/mcpp-res/eigen/releases/download/5.0.1/eigen-5.0.1.t
 
 - CN 镜像:`mcpp-res/eigen@5.0.1` 已建 + 发布,CN 与 GLOBAL byte-identical(sha `e9c326dc…`),http 200。
 - 本地实测(mcpp **0.0.68**,与 CI 同版本,`MCPP_INDEX_MIRROR=GLOBAL`):
-  `tests/run_example.sh eigen` → `eigen ok=1 y=[3 7] det=-2 dot=5`,`OK: eigen`。
+  `tests/run_example.sh eigen`(开 `blas` feature)→ `eigen ok=1 core=1 blas(dgemm)=1 C=[1 3 2 4]`,`OK: eigen`。
+- `blas` feature 门控负向实测:不带 feature 调 `dgemm_` → 链接 `undefined reference to 'dgemm_'`(默认排除生效)。
 - `unsupported/` 可达性单独实测:`g++ -std=c++23 -I<root>` 编 `<Eigen/Dense> + <unsupported/Eigen/MatrixFunctions> +
   <AutoDiff>` → rc=0。
 - 全量 lint 本地模拟通过(语法 / 必填字段 / 无前导 v / mirror url 检查)。

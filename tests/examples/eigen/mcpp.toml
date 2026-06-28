@@ -10,8 +10,11 @@ default = "gcc@16.1.0"
 [indices]
 compat = { path = "../../.." }
 
+# `features = ["blas"]` opts into Eigen's reference BLAS (eigen_blas) so this
+# example also exercises the feature-gated source build. Without it, the core
+# header-only `#include <Eigen/...>` path still works on its own.
 [dependencies.compat]
-eigen = "5.0.1"
+eigen = { version = "5.0.1", features = ["blas"] }
 
 [targets.eigen-example]
 kind = "bin"
