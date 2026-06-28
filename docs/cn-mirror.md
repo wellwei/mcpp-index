@@ -9,6 +9,26 @@
 - CN 资产公网 URL 约定:
   `https://gitcode.com/mcpp-res/<slug>/releases/download/<ver>/<slug>-<ver>.<ext>`
 
+## 没有 `mcpp-res` 写权限时的回退
+
+建镜像需要 gitcode `mcpp-res` org 的写权限(token)。**拿不到时不要硬凑镜像表** —— lint
+(`check_mirror_urls.lua`)强制:`url` 一旦写成表,`CN` **必须**是 `https://gitcode.com/mcpp-res/…`,
+所以 `{ GLOBAL=上游, CN=上游 }` 会直接挂 lint。正确回退是**用 plain-string 单串 url**(只填上游 release),
+lint 对纯字符串 url 不做镜像约束:
+
+```lua
+-- 回退:无 CN 镜像,GLOBAL/CN 都等价于上游 release(单串即可)
+["0.1.1"] = { url = "https://github.com/<owner>/<repo>/releases/download/v0.1.1/<repo>-0.1.1.tar.gz",
+              sha256 = "…" },
+```
+
+- CN 用户会回落到上游源(慢一点但可用),功能不受影响。
+- 真实先例:`pkgs/t/tensorvia-cpu.lua`(用户自有 mcpp 库,无 CN 镜像,三平台都是上游单串 url)。
+- 后续拿到权限、或由维护者补上镜像后,再把该版本的 `url` 改成 `{ GLOBAL=…, CN=… }` 表即可(sha256 不变)。
+
+> 想表达「GLOBAL 和 CN 都走上游」就用上面的单串写法,**不要**写成 `{GLOBAL=x, CN=x}` 表(过不了 CN 必须指向
+> gitcode 的 lint)。
+
 ## gtc 工具
 
 `gtc`(`tools/gtc`,亦在 `~/.local/bin/gtc`,python,gitcode API v5)。Token 在

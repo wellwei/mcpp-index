@@ -14,26 +14,33 @@ description: Use when adding a new third-party library/package to the mcpp-index
 - `.agents/docs/2026-06-28-add-eigen-plan.md`(header-only + source-gated `blas` feature)
 - 既有 PR:#48(cjson + nlohmann.json),#50(eigen)。
 
-> 配套参考文件(按需读):
-> - [package-types.md](package-types.md) —— 四种库形态的描述符模板 + 真实样例路径
-> - [cn-mirror.md](cn-mirror.md) —— gtc / gitcode CN 镜像闭环
-> - [references.md](references.md) —— 仓库结构、schema、CI、关键文件、踩坑清单
+> 配套参考文件(在仓库 `docs/` 下,人/agent 共用,按需读):
+> - [docs/package-types.md](../../../docs/package-types.md) —— 四种库形态的描述符模板 + 真实样例路径
+> - [docs/cn-mirror.md](../../../docs/cn-mirror.md) —— gtc / gitcode CN 镜像闭环(含无 mcpp-res 权限的回退)
+> - [docs/repository-and-schema.md](../../../docs/repository-and-schema.md) —— 仓库结构、schema、CI、关键文件、踩坑清单
 
 ## 何时用 / 不用
-- **用**:把一个新的第三方库(或新版本)加进 mcpp-index。
+- **用**:把一个新库(或新版本)加进 mcpp-index。两种来源都适用:
+  - **(a) 第三方上游库** —— 自己没有 mcpp 支持(如 cJSON / Eigen / nlohmann),由本仓以 `compat` 形态适配。
+  - **(b) 用户基于 mcpp 开发的库** —— 上游已经是 mcpp 工程(自带 `mcpp.toml`、`mcpp emit xpkg` 产出描述符、自有 release),
+    要登记进索引(如 `mcpplibs.*`、`tensorvia-cpu`)。这类多是 **Form A**:描述符只声明元数据 + 下载地址,无需内联构建。
 - **不用**:改 mcpp 本体、改 xlings 引擎、纯文档。那些不在本仓。
 
 ## 总流程(12 步)
 
 按顺序做;每步的细节进对应参考文件。建议用 todo 跟踪。
 
-1. **调研上游**(最关键,决定形态)
+1. **调研来源与形态**(最关键,决定模板)
+   - **先分清来源**:是 (a) 第三方上游库,还是 (b) 用户自己的 mcpp 库?
+     - (b) 自有 mcpp 库:形态已定(Form A,模块库),版本/release 上游已有 → 本步很轻,直接拿上游 `mcpp emit xpkg` 的描述符
+       或照 `pkgs/t/tensorvia-cpu.lua` 写;重点落在镜像 + 登记 + 验证。
+     - (a) 第三方库:需判形态(下面)。
    - 上游仓库、**最新 tag/版本**(`git ls-remote --tags <repo>` → `sort -V | tail`;注意大版本跳跃,如 Eigen 3.4 → 5.x)。
    - License、源码布局:下 tarball,`tar -tzf` 看顶层 wrap 目录 + 子目录;判断是
      **纯头 / C 源码 / 自带 `.cppm` 模块 / 有可选组件(可做 feature)**。
    - 算 `sha256sum`,并**复算两次确认稳定**(GitLab/部分归档会重新打包导致 sha 漂移 → CI 用 GLOBAL 拉取会校验失败)。
-2. **定形态 → 选模板**:见 [package-types.md](package-types.md)。四类:C-source compat / header-only / C++23 module(generated wrapper)/ 外部 Form-A 模块仓。
-3. **建 CN 镜像**:`gtc` 在 gitcode `mcpp-res` org 下建仓 + 发 release,上传**与 GLOBAL 同一个 tarball**(保证 byte-identical → 同 sha)。见 [cn-mirror.md](cn-mirror.md)。
+2. **定形态 → 选模板**:见 [docs/package-types.md](../../../docs/package-types.md)。四类:C-source compat / header-only / C++23 module(generated wrapper)/ 外部 Form-A 模块仓。
+3. **建 CN 镜像**:`gtc` 在 gitcode `mcpp-res` org 下建仓 + 发 release,上传**与 GLOBAL 同一个 tarball**(保证 byte-identical → 同 sha)。**没有 `mcpp-res` 写权限时**:不要写镜像表,直接用 plain-string `url = "<GLOBAL 上游 release>"`(lint 允许;CN 用户回落上游),留给维护者后补镜像 —— 详见 [docs/cn-mirror.md](../../../docs/cn-mirror.md)。
 4. **写描述符** `pkgs/<x>/<name>.lua`
    - ⚠️ **目录 `<x>` = 完整包名首字母**(`compat.eigen` → `pkgs/c/`,`nlohmann.json` → `pkgs/n/`),**不是短名**。放错本地 path index 会 `not found in local index`。
    - 三平台 `xpm`(linux/macosx/windows),每个版本 `url = { GLOBAL=…, CN=… }` + `sha256`。
@@ -45,7 +52,7 @@ description: Use when adding a new third-party library/package to the mcpp-index
 7. **本地实测**(用与 CI 同版本的 mcpp):见下"本地验证"。必须真跑过 `mcpp build && mcpp run` 绿。
 8. **README** 在对应表(mcpplibs 模块库 / 独立模块库 / 第三方 C/C++ 库)加一行。
 9. **设计文档** `.agents/docs/<YYYY-MM-DD>-add-<lib>-plan.md`,记录形态判断、镜像、feature 评估、实测结论、踩坑。
-10. **本地 lint**:模拟 `validate.yml` 的 lint(语法 / 必填字段 / 无前导 v / mirror 检查)。见 [references.md](references.md)。
+10. **本地 lint**:模拟 `validate.yml` 的 lint(语法 / 必填字段 / 无前导 v / mirror 检查)。见 [docs/repository-and-schema.md](../../../docs/repository-and-schema.md)。
 11. **分支 → commit → push → PR**(从 `main` 切新分支;别直接推 main)。PR 描述写清形态、镜像、feature、实测。
 12. **盯 CI 绿**:`detect` 应只选中本库的 example(`smoke-full-linux`/`portable` 显示 `skipping`),`smoke-examples (<short>)` 绿;`mirror-cn-reachable` 覆盖新 CN url。合并交维护者。
 
