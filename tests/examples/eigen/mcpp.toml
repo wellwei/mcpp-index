@@ -1,0 +1,18 @@
+# Minimal example: Eigen consumed header-only via the compat source build.
+# Run from this directory:  mcpp run   (index path is relative to repo root)
+[package]
+name = "eigen-example"
+version = "0.1.0"
+
+[toolchain]
+default = "gcc@16.1.0"
+
+[indices]
+compat = { path = "../../.." }
+
+[dependencies.compat]
+eigen = "5.0.1"
+
+[targets.eigen-example]
+kind = "bin"
+main = "src/main.cpp"
