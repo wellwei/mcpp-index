@@ -1,0 +1,11 @@
+# toml++ test project: consumes the C++23 module `tomlplusplus` and asserts
+# parse + typed access + round-trip serialization under `mcpp test`.
+[package]
+name = "tomlplusplus-tests"
+version = "0.1.0"
+
+[indices]
+marzer = { path = "../../.." }
+
+[dependencies.marzer]
+tomlplusplus = "3.4.0"

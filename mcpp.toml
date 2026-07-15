@@ -17,6 +17,7 @@ members = [
     "tests/examples/gui-stack",
     "tests/examples/imgui",
     "tests/examples/imgui-window",
+    "tests/examples/marzer.tomlplusplus",
     "tests/examples/nlohmann.json",
     "tests/examples/openblas",
     "tests/examples/opencv",
