@@ -11,12 +11,12 @@ on:
   workflow_dispatch:
 
 env:
-  # Bumped to 0.0.94: fixes feature-gated `sources` never being compiled under
-  # `mcpp test` (mcpp#218) — required by the tests/examples/spdlog-compiled
-  # member, which links against spdlog's feature-compiled src/*.cpp. Also
-  # carries standard = "c++fly" in the resolver grammar (0.0.91), so c++fly
+  # 0.0.96: carries the windows scanner symlink-escape crash fix (mcpp#230),
+  # so all platforms ride the same version again. Older floors of note:
+  # 0.0.94 fixed feature-gated `sources` under `mcpp test` (mcpp#218);
+  # 0.0.91 added standard = "c++fly" to the resolver grammar, so c++fly
   # descriptors get the lint WARN below, not a hard grammar-parse rejection.
-  MCPP_VERSION: "0.0.94"
+  MCPP_VERSION: "0.0.96"
 
 jobs:
   lint:
@@ -156,37 +156,46 @@ jobs:
             ext: tar.gz
             mcpp: bin/mcpp
             xlings: registry/bin/xlings
+            mcpp_version: "0.0.96"   # keep in sync with env.MCPP_VERSION
           - platform: macos
             os: macos-15
             suffix: macosx-arm64
             ext: tar.gz
             mcpp: bin/mcpp
             xlings: registry/bin/xlings
+            mcpp_version: "0.0.96"   # keep in sync with env.MCPP_VERSION
           - platform: windows
             os: windows-latest
             suffix: windows-x86_64
             ext: zip
             mcpp: bin/mcpp.exe
             xlings: registry/bin/xlings.exe
+            mcpp_version: "0.0.96"   # keep in sync with env.MCPP_VERSION
+    env:
+      MCPP_EFFECTIVE: ${{ matrix.mcpp_version }}
     steps:
+      # Full history: the member-selection step below diffs against the PR
+      # base to decide which workspace members to test.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Restore mcpp registry cache
         uses: actions/cache@v4
         with:
           # Holds toolchains AND the built compat packages (data/xpkgs), so a
           # repeat `mcpp test` rebuilds little.
           path: ~/.mcpp/registry
-          key: mcpp-registry-${{ runner.os }}-${{ env.MCPP_VERSION }}-${{ hashFiles('pkgs/**/*.lua', 'tests/**', '.github/workflows/validate.yml') }}
+          key: mcpp-registry-${{ runner.os }}-${{ env.MCPP_EFFECTIVE }}-${{ hashFiles('pkgs/**/*.lua', 'tests/**', '.github/workflows/validate.yml') }}
           restore-keys: |
-            mcpp-registry-${{ runner.os }}-${{ env.MCPP_VERSION }}-
+            mcpp-registry-${{ runner.os }}-${{ env.MCPP_EFFECTIVE }}-
       - name: Download mcpp
         shell: bash
         env:
-          MCPP_ARCHIVE: mcpp-${{ env.MCPP_VERSION }}-${{ matrix.suffix }}.${{ matrix.ext }}
-          MCPP_ROOT: mcpp-${{ env.MCPP_VERSION }}-${{ matrix.suffix }}
+          MCPP_ARCHIVE: mcpp-${{ env.MCPP_EFFECTIVE }}-${{ matrix.suffix }}.${{ matrix.ext }}
+          MCPP_ROOT: mcpp-${{ env.MCPP_EFFECTIVE }}-${{ matrix.suffix }}
         run: |
           curl -L -fsS -o "$MCPP_ARCHIVE" \
-            "https://github.com/mcpp-community/mcpp/releases/download/v${MCPP_VERSION}/${MCPP_ARCHIVE}"
+            "https://github.com/mcpp-community/mcpp/releases/download/v${MCPP_EFFECTIVE}/${MCPP_ARCHIVE}"
           case "$MCPP_ARCHIVE" in
             *.zip) powershell -NoProfile -Command "Expand-Archive -Force -Path '${MCPP_ARCHIVE}' -DestinationPath '.'" ;;
             *)     tar -xzf "$MCPP_ARCHIVE" ;;
@@ -203,14 +212,105 @@ jobs:
             echo "MCPP_VENDORED_XLINGS=$root/${{ matrix.xlings }}" >> "$GITHUB_ENV"
             echo "$root/bin" >> "$GITHUB_PATH"
           fi
-      - name: mcpp test --workspace
+      # compat.ffmpeg carries NASM .asm sources. No host install needed:
+      # mcpp >= 0.0.95 resolves nasm itself (PATH → sandbox → auto
+      # `xlings install nasm`), lazily, only when the plan has .asm units —
+      # same self-bootstrap contract as the llvm toolchain. The sandbox copy
+      # lands in ~/.mcpp/registry, so the cache carries it across runs.
+      # The refresh below is needed because release archives vendor an index
+      # snapshot and the bootstrap is offline-first: 0.0.96 shipped with a
+      # nasm.lua deployed engines can't resolve — it "installs" empty
+      # (mcpp#232; fixed in xim-pkgindex#398 after the release was cut).
+      # One `mcpp index update` (native wrapper over `xlings update` with
+      # the sandbox env + transient-network retry) lets the bootstrap see
+      # the fixed descriptor. Drop once a mcpp release vendors a post-#398
+      # index snapshot.
+      - name: Refresh sandbox package index (nasm bootstrap, mcpp#232)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: '"$MCPP" index update'
+
+      # ── Selective member testing ──────────────────────────────────────
+      # `mcpp test --workspace` builds every member (opencv, ffmpeg, …) and
+      # dominates CI wall-clock, while a PR almost always touches one
+      # package. Map changed files → affected members and test only those:
+      #   pkgs/<x>/<lib>.lua    → members whose mcpp.toml references <lib>
+      #   tests/examples/<m>/** → member <m>
+      # Run the FULL workspace when the change can affect everything:
+      # non-PR events (push to main, the nightly cron, dispatch), this
+      # workflow file (it carries the mcpp version pins, so a version bump
+      # always re-validates every package), the workspace manifest, or
+      # shared test scripts. Docs-only changes select nothing.
+      # Note: bash 3.2 on macOS runners — no associative arrays here.
+      - name: Select affected workspace members
+        shell: bash
+        run: |
+          full() { echo "MEMBERS=__ALL__" >> "$GITHUB_ENV"; echo "full run: $1"; exit 0; }
+          [ "${{ github.event_name }}" = "pull_request" ] || full "event=${{ github.event_name }}"
+          base="origin/${{ github.base_ref }}"
+          changed=$(git diff --name-only "$base"...HEAD)
+          printf 'changed files vs %s:\n%s\n' "$base" "$changed"
+          sel=""
+          add() { case " $sel " in *" $1 "*) ;; *) sel="$sel $1" ;; esac; }
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            case "$f" in
+              .github/workflows/validate.yml|tests/*.sh|tools/*) full "$f" ;;
+              mcpp.toml)
+                # Workspace manifest. Every new-package PR appends to the
+                # members list, so that alone must NOT force a full run:
+                # select the added members; anything else in this file
+                # (indices, settings) affects everyone → full.
+                if ! diff -q <(git show "$base:mcpp.toml" | grep -v 'tests/examples/') \
+                             <(grep -v 'tests/examples/' mcpp.toml) >/dev/null; then
+                  full "mcpp.toml non-member change"
+                fi
+                for p in $(comm -13 <(git show "$base:mcpp.toml" | grep -o 'tests/examples/[A-Za-z0-9._-]*' | sort -u) \
+                                    <(grep -o 'tests/examples/[A-Za-z0-9._-]*' mcpp.toml | sort -u)); do
+                  add "${p#tests/examples/}"
+                done ;;
+              tests/examples/*)
+                m=${f#tests/examples/}; m=${m%%/*}
+                # A deleted/renamed member dir implies a mcpp.toml edit,
+                # which already forces a full run above.
+                [ -d "tests/examples/$m" ] && add "$m" ;;
+              pkgs/*.lua|pkgs/*/*.lua)
+                lib=$(basename "$f" .lua); lib=${lib#compat.}
+                hit=0
+                for mt in tests/examples/*/mcpp.toml; do
+                  if grep -q "$lib" "$mt"; then add "$(basename "$(dirname "$mt")")"; hit=1; fi
+                done
+                [ "$hit" = 1 ] || echo "note: no workspace member exercises $f" ;;
+              *.md|docs/*|.agents/*|.github/*) : ;;
+              *) full "unclassified change: $f" ;;
+            esac
+          done <<EOF
+          $changed
+          EOF
+          sel=${sel# }
+          echo "MEMBERS=$sel" >> "$GITHUB_ENV"
+          echo "selected members: ${sel:-<none>}"
+
+      - name: mcpp test (workspace or affected members)
         shell: bash
         env:
           MCPP_INDEX_MIRROR: GLOBAL
         run: |
           "$MCPP" --version
           # No `timeout` wrapper: absent on macOS runners; job-level timeout-minutes bounds it.
-          "$MCPP" test --workspace
+          if [ "$MEMBERS" = "__ALL__" ]; then
+            "$MCPP" test --workspace
+          elif [ -z "$MEMBERS" ]; then
+            echo "No workspace member affected by this change — nothing to test."
+          else
+            rc=0
+            for m in $MEMBERS; do
+              echo "::group::mcpp test -p $m"
+              "$MCPP" test -p "$m" || rc=1
+              echo "::endgroup::"
+            done
+            exit $rc
+          fi
       - name: tinyhttps module package smoke
         shell: bash
         env:
@@ -226,15 +326,17 @@ jobs:
   imgui-module:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      MCPP_EFFECTIVE: "0.0.96"   # keep in sync with env.MCPP_VERSION
     steps:
       - uses: actions/checkout@v4
       - name: Restore mcpp registry cache
         uses: actions/cache@v4
         with:
           path: ~/.mcpp/registry
-          key: mcpp-registry-${{ runner.os }}-${{ env.MCPP_VERSION }}-${{ hashFiles('pkgs/**/*.lua', 'tests/**', '.github/workflows/validate.yml') }}
+          key: mcpp-registry-${{ runner.os }}-${{ env.MCPP_EFFECTIVE }}-${{ hashFiles('pkgs/**/*.lua', 'tests/**', '.github/workflows/validate.yml') }}
           restore-keys: |
-            mcpp-registry-${{ runner.os }}-${{ env.MCPP_VERSION }}-
+            mcpp-registry-${{ runner.os }}-${{ env.MCPP_EFFECTIVE }}-
       - name: Download mcpp
         run: |
           curl -L -fsS -o mcpp.tar.gz \
