@@ -148,6 +148,31 @@ local function is_dnn_glob(g)
 end
 local function ser_id(v) return ser(v, "") end
 
+-- dnn's Vulkan compute backend (modules/dnn/src/vkcom/**) is dead code without a
+-- Vulkan SDK (WITH_VULKAN is OFF in every headless profile); its sources #include
+-- <opencv2/dnn.hpp> from a nested dir and fail mcpp's dependency scan off-linux.
+-- Drop them from the feature entirely — CPU dnn inference is unaffected.
+local function is_vkcom(s) return type(s) == "string" and s:find("modules/dnn/src/vkcom", 1, true) ~= nil end
+-- windows ships NO mlas at all: its x86 kernels are GAS/ELF .S (not COFF-assemblable
+-- under clang-cl), so the windows snapshot skips mlas and DNN uses its built-in
+-- fast_gemm. Every mlas flag-glob (the group defines, the platform.cpp `-include
+-- unistd.h` curated exception — which would also fail, windows has no unistd.h) is
+-- therefore dead on windows -> drop them all.
+local function is_mlas_glob(f)
+    return type(f) == "table" and type(f.glob) == "string"
+       and f.glob:find("3rdparty/mlas", 1, true) ~= nil
+end
+-- any mlas SOURCE (incl the curated mcpp_generated/mlas_hgemm_stub.cpp, which
+-- #includes "mlas.h") — dead on windows where mlas is skipped entirely.
+local function is_mlas_src(s) return type(s) == "string" and s:find("mlas", 1, true) ~= nil end
+-- clsrc/opencl_kernels_<m>.cpp are written INERT by build.mcpp (cl2cpp) but never
+-- compiled (OpenCL OFF in this headless profile, not registered as sources), so
+-- their per-file flag-globs match nothing -> a permanent "[build].flags glob …
+-- matched no source file" warning. Drop them entirely.
+local function is_dead_opencl_glob(f)
+    return type(f) == "table" and type(f.glob) == "string"
+       and f.glob:find("clsrc/opencl_kernels", 1, true) ~= nil
+end
 local pkgs, order = {}, {}
 for _, e in ipairs(INPUTS) do pkgs[e.os] = load_pkg(e.path); order[#order+1] = e.os end
 local dnn_src, dnn_flg, base_flg = {}, {}, {}
@@ -155,10 +180,17 @@ for _, os_ in ipairs(order) do
     local p = pkgs[os_]
     local feat = (p.mcpp.features and p.mcpp.features.dnn) or {}
     local srcs, flgs, cleaned = {}, {}, {}
-    for _, s in ipairs(feat.sources or {}) do srcs[#srcs+1] = s end
-    for _, f in ipairs(feat.flags or {}) do flgs[#flgs+1] = f end
+    local drop_mlas = (os_ == "windows")                      -- windows uses fast_gemm, no mlas
+    for _, s in ipairs(feat.sources or {}) do
+        if not is_vkcom(s) and not (drop_mlas and is_mlas_src(s)) then srcs[#srcs+1] = s end
+    end
+    for _, f in ipairs(feat.flags or {}) do
+        if not (drop_mlas and is_mlas_glob(f)) then flgs[#flgs+1] = f end
+    end
     for _, f in ipairs(p.mcpp.flags or {}) do
-        if type(f) == "table" and is_dnn_glob(f.glob) then flgs[#flgs+1] = f
+        if is_dead_opencl_glob(f) then                       -- drop: inert, never compiled
+        elseif type(f) == "table" and is_dnn_glob(f.glob) then
+            if not (drop_mlas and is_mlas_glob(f)) then flgs[#flgs+1] = f end
         else cleaned[#cleaned+1] = f end
     end
     dnn_src[os_], dnn_flg[os_], base_flg[os_] = srcs, flgs, cleaned
@@ -190,20 +222,27 @@ local function split_common(map)
     end
     return common, delta
 end
-local common_src, delta_src = split_common(dnn_src)
-local common_flg, delta_flg = split_common(dnn_flg)
-
--- neutral features: base's non-dnn features (unifont) verbatim; dnn = common-only
+-- `dnn` is an OS-only feature (mcpp#253): it exists only on the platforms whose
+-- snapshot actually built it. Each such platform carries the FULL payload under
+-- mcpp.<os>.features.dnn — there is NO neutral dnn, so a platform without it
+-- cannot half-enable the feature. Windows is intentionally excluded: mlas's x86
+-- kernels are GAS/ELF `.S` (`.type …,@function`), which clang-cl cannot assemble
+-- to Windows COFF (would need the MASM amd64 `.asm` variant or a C++-only mlas).
 local neutral_features = {}
 for fname, fdef in pairs(base.mcpp.features or {}) do
     if fname ~= "dnn" then neutral_features[fname] = fdef end
 end
 local base_dnn = base.mcpp.features and base.mcpp.features.dnn
-neutral_features.dnn = {
-    defines = (base_dnn and base_dnn.defines) or { "HAVE_OPENCV_DNN" },
-    flags   = common_flg,
-    sources = common_src,
-}
+local dnn_defines = (base_dnn and base_dnn.defines) or { "HAVE_OPENCV_DNN" }
+-- an OS "ships dnn" only if it built the actual module — gen_descriptor always
+-- seeds features.dnn.sources with mcpp_generated/mlas_hgemm_stub.cpp even for a
+-- videoio-only (non-dnn) snapshot, so a non-empty list is NOT enough.
+local function ships_dnn(os_)
+    for _, s in ipairs(dnn_src[os_] or {}) do
+        if type(s) == "string" and s:find("modules/dnn", 1, true) then return true end
+    end
+    return false
+end
 
 merged.mcpp = {
     language = base.mcpp.language,
@@ -217,11 +256,8 @@ for _, os_ in ipairs(order) do
     blk.flags = base_flg[os_]                       -- dnn-group globs stripped
     local sub = p.mcpp[os_]
     if sub and sub.ldflags then blk.ldflags = sub.ldflags end
-    if #dnn_src[os_] > 0 then                         -- this OS supports dnn -> its delta
-        local fd = {}
-        if #delta_src[os_] > 0 then fd.sources = delta_src[os_] end
-        if #delta_flg[os_] > 0 then fd.flags = delta_flg[os_] end
-        if next(fd) then blk.features = { dnn = fd } end
+    if ships_dnn(os_) then                           -- this OS ships dnn -> full payload
+        blk.features = { dnn = { defines = dnn_defines, sources = dnn_src[os_], flags = dnn_flg[os_] } }
     end
     merged.mcpp[os_] = blk
 end
