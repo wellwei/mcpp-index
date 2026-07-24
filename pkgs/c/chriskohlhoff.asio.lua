@@ -2,7 +2,7 @@
 -- (Form B inline descriptor, separate-compilation mode)。
 --
 -- 注意事项
---   * 使用 `mcpp add asio@1.38.1` 引入；消费者需显式写
+--   * 使用 `mcpp add chriskohlhoff.asio@1.38.1` 引入；消费者需显式写
 --     `import std; import asio;`，因为本包设置 import_std = false。
 --   * 本包只支持模块方式消费。同一 translation unit 不要混用
 --     `#include <asio.hpp>` 和 `import asio;`，避免 inline 定义与模块 BMI
@@ -37,7 +37,7 @@
 --     `asio/coroutine.hpp`、`asio/streambuf.hpp`。
 package = {
     spec        = "1",
-    namespace   = "",
+    namespace   = "chriskohlhoff",
     name        = "asio",
     description = "Standalone asio exposed as the C++23 module `asio` (separate compilation)",
     licenses    = {"BSL-1.0"},

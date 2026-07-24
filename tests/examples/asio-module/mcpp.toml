@@ -1,11 +1,11 @@
 # Asio C++23-module consumer test project: `import std; import asio;`.
-# The public package is the default-root module-only `asio@1.38.1` package.
+# The public package is `chriskohlhoff.asio@1.38.1` (module-only).
 [package]
 name = "asio-module-tests"
 version = "0.1.0"
 
 [indices]
-default = { path = "../../.." }
+chriskohlhoff = { path = "../../.." }
 
-[dependencies]
+[dependencies.chriskohlhoff]
 asio = "1.38.1"
