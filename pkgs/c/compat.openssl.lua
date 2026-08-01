@@ -16,9 +16,10 @@
 -- HOST REQUIREMENT — perl. `./config` IS a Perl script, and there is no
 -- `xim:perl` to declare as a build dep, so this is the one thing the package
 -- cannot bring itself. CI runners and every mainstream distro ship it; a
--- stripped container may not. install() probes for it up front and fails with
--- that sentence rather than letting `./config` die with a shell error nobody
--- can read. (This is also why mbun's OpenSSL package chose a vendored prebuilt
+-- stripped container may omit it or its core modules. install() probes both
+-- before touching the source archive, rather than letting `./config` die with
+-- a shell error nobody can read. (This is also why mbun's OpenSSL package
+-- chose a vendored prebuilt
 -- over a source build; here a source build is the only option that covers both
 -- linux and macOS.)
 --
@@ -109,6 +110,7 @@ package = {
 
 import("xim.libxpkg.pkginfo")
 import("xim.libxpkg.log")
+import("xim.libxpkg.system")
 
 local function sh_quote(value)
     return "'" .. tostring(value):gsub("'", "'\\''") .. "'"
@@ -143,11 +145,12 @@ local function cc_override()
     return ""
 end
 
+local function exec_ok(cmd)
+    return pcall(system.exec, string.format("bash -c %s", sh_quote(cmd)))
+end
+
 local function have(tool)
-    return pcall(function()
-        os.exec(string.format("bash -c %s",
-                              sh_quote("command -v " .. tool .. " >/dev/null 2>&1")))
-    end)
+    return exec_ok("command -v " .. tool .. " >/dev/null 2>&1")
 end
 
 -- Last `n` lines of the build log, or nil if it cannot be read.
@@ -171,7 +174,7 @@ end
 -- a single pre-formatted argument: log output contains `%` often enough that
 -- handing it to a format string is its own failure mode.
 local function run(step, logf, cmd)
-    local ok, err = pcall(os.exec, string.format("bash -c %s", sh_quote(cmd)))
+    local ok, err = exec_ok(cmd)
     if ok then return true end
     local tail = tail_lines(logf, 40) or "<log unreadable at " .. tostring(logf) .. ">"
     log.error("%s", "compat.openssl: " .. step .. " failed (" .. tostring(err)
@@ -184,6 +187,17 @@ local function _install_impl()
         log.error("compat.openssl: `perl` not found on PATH. OpenSSL's "
                .. "./config is a Perl script and there is no xim:perl build "
                .. "dep to fall back on — install perl and retry.")
+        return false
+    end
+    local perl_modules = "Config FindBin File::Basename File::Spec::Functions "
+                      .. "File::Path Cwd"
+    local perl_probe = "perl -M" .. perl_modules:gsub(" ", " -M")
+                    .. " -e 1 >/dev/null 2>&1"
+    if not exec_ok(perl_probe) then
+        log.error("compat.openssl: PATH contains `perl`, but it cannot load "
+               .. "the core modules required by OpenSSL's Configure script "
+               .. "(%s). Install a complete Perl distribution and retry.",
+                  perl_modules)
         return false
     end
 
