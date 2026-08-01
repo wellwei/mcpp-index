@@ -75,7 +75,7 @@ env:
   # 0.0.94 fixed feature-gated `sources` under `mcpp test` (mcpp#218); 0.0.91
   # added standard = "c++fly" to the resolver grammar, so c++fly descriptors
   # get the lint WARN below, not a hard grammar-parse rejection.
-  MCPP_VERSION: "0.0.109"
+  MCPP_VERSION: "2026.8.1.1"
 
 jobs:
   lint:
@@ -148,6 +148,8 @@ jobs:
       # because it needs the full set of declared identities.
       - name: Lint cross-package references
         run: lua5.4 tests/check_cross_package_refs.lua pkgs/*/*.lua
+      - name: Test compat.openssl install failure handling
+        run: lua5.4 tests/test_compat_openssl_install.lua
       # ── Single-source-of-truth grammar check ─────────────────────────
       # `mcpp xpkg parse` uses EXACTLY the resolver's parser, so what
       # passes here is what builds for users of the pinned MCPP_VERSION.
@@ -240,21 +242,21 @@ jobs:
             ext: tar.gz
             mcpp: bin/mcpp
             xlings: registry/bin/xlings
-            mcpp_version: "0.0.109"   # keep in sync with env.MCPP_VERSION
+            mcpp_version: "2026.8.1.1"   # keep in sync with env.MCPP_VERSION
           - platform: macos
             os: macos-15
             suffix: macosx-arm64
             ext: tar.gz
             mcpp: bin/mcpp
             xlings: registry/bin/xlings
-            mcpp_version: "0.0.109"   # keep in sync with env.MCPP_VERSION
+            mcpp_version: "2026.8.1.1"   # keep in sync with env.MCPP_VERSION
           - platform: windows
             os: windows-latest
             suffix: windows-x86_64
             ext: zip
             mcpp: bin/mcpp.exe
             xlings: registry/bin/xlings.exe
-            mcpp_version: "0.0.109"   # keep in sync with env.MCPP_VERSION
+            mcpp_version: "2026.8.1.1"   # keep in sync with env.MCPP_VERSION
     env:
       MCPP_EFFECTIVE: ${{ matrix.mcpp_version }}
     steps:
