@@ -406,7 +406,12 @@ jobs:
           "$MCPP" --version
           # No `timeout` wrapper: absent on macOS runners; job-level timeout-minutes bounds it.
           if [ "$MEMBERS" = "__ALL__" ]; then
-            "$MCPP" test --workspace
+            # mcpp 2026.8.1.1's global dependency cache key does not include
+            # collision-disambiguated object paths. A full fan-out can cache
+            # zlib's compress.o under a nested path for one member, then look
+            # for a flat path under the same key in a later member. Keep the
+            # full regression local until the client cache contract is fixed.
+            "$MCPP" test --workspace --cache=local
           elif [ -z "$MEMBERS" ]; then
             echo "No workspace member affected by this change — nothing to test."
           else
